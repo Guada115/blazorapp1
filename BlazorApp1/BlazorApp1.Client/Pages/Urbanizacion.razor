@@ -1,0 +1,388 @@
+@page "/urbanizacion"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Urbanización</PageTitle>
+
+<div class="container-fluid">
+    <h1 class="mb-4 text-center">Gestión de Urbanización</h1>
+
+    <!-- TABLA 1: APARTAMENTOS -->
+    <div class="card mb-5 border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">1. Apartamentos</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px">#</th>
+                            <th>Unidad</th>
+                            <th>TorreId</th>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Área</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in rows1)
+                        {
+                            <tr>
+                                <td>@(rows1.IndexOf(row) + 1)</td>
+                                <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Unidad" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="TorreId" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Número" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Tipo" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato5" placeholder="Área" /></td>                               
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" @onclick="() => rows1.Add(new TableRow())">
+                <i class="bi bi-save"></i> Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA 2: Bitacora vigilancia -->
+    <div class="card mb-5 border-secondary shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="card-title mb-0">2. Bitacora vigilancia</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px">#</th>
+                            <th>Bitacora Id</th>
+                            <th>Vigilante Id</th>
+                            <th>Fecha Hora</th>
+                            <th>Obsrvación</th>                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in rows2)
+                        {
+                            <tr>
+                                <td>@(rows2.IndexOf(row) + 1)</td>
+                                <td><input type="text" class="form-control" @bind="row.Dato1" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato2" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato3" /></td>
+                                <td><input type="text" class="form-control" @bind="row.Dato4" /></td>                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-secondary" @onclick="() => rows2.Add(new TableRow())">
+                Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA 3 -->
+    <div class="card mb-5 border-info shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h3 class="card-title mb-0">3. Conjunto</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 50px">#</th>
+                        <th>Conjunto Id</th><th>NMombre</th><th>Dirección</th><th>Ciudad</th><th>Nit</th><th>Télefono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in rows3)
+                    {
+                        <tr>
+                            <td>@(rows3.IndexOf(row) + 1)</td>
+                            <td><input type="text" class="form-control" @bind="row.Dato1" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato2" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato3" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato4" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato5" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato6" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-info text-white" @onclick="() => rows3.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 4 -->
+    <div class="card mb-5 border-success shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title mb-0">4. Ingreso</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 50px">#</th>
+                        <th>Ingreso Id</th><th>Tipo</th><th>Nombre persona</th><th>Fecha Hora de ingreso</th><th>Fecha Hora Salida</th><th>Uduario Id</th><th>Unidad Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in rows4)
+                    {
+                        <tr>
+                            <td>@(rows4.IndexOf(row) + 1)</td>
+                            <td><input type="text" class="form-control" @bind="row.Dato1" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato2" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato3" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato4" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato5" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato6" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-success" @onclick="() => rows4.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 5 -->
+    <div class="card mb-5 border-warning shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="card-title mb-0">5. Mantenimiento)</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr><th style="width: 50px">#</th><th>Mantenimiento Id</th><th>Tipo Mantenimiento</th><th>Descripción</th><th>Costo</th><th>zona comun Id 5</th><th>Proveedor</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in rows5)
+                    {
+                        <tr>
+                            <td>@(rows5.IndexOf(row) + 1)</td>
+                            <td><input type="text" class="form-control" @bind="row.Dato1" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato2" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato3" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato4" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato5" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato6" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-warning" @onclick="() => rows5.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 6 -->
+    <div class="card mb-5 border-danger shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title mb-0">6. Parqueadero)</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr><th style="width: 50px">#</th><th>Parqueadero Id</th><th>Tipo</th><th>Número</th><th>Unidad Id</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in rows6)
+                    {
+                        <tr>
+                            <td>@(rows6.IndexOf(row) + 1)</td>
+                            <td><input type="text" class="form-control" @bind="row.Dato1" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato2" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato3" /></td>
+                            <td><input type="text" class="form-control" @bind="row.Dato4" /></td>                            
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-danger" @onclick="() => rows6.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 7 -->
+    <div class="card mb-5 border-dark shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h3 class="card-title mb-0">7. Parqueadero Visitantes</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Parqueadero visitante Id</th><th></th><th>Parqueadero Id</th><th>Fecha Hora Ingreso</th><th>Fecha Hora Salida</th><th>Ingreso Id </th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows7)
+                    {
+                        <tr><td>@(rows7.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td><td><input type="text" class="form-control" @bind="row.Dato5" /></td><td><input type="text" class="form-control" @bind="row.Dato6" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-dark" @onclick="() => rows7.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 8 -->
+    <div class="card mb-5 border-primary shadow-sm">
+        <div class="card-header bg-primary text-white"><h3 class="card-title mb-0">8. Reserva</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Reserva Id</th><th>Zona común Id</th><th>Usuario Id</th><th>Fecha</th><th>Hora inicio</th><th>Hora fin</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows8)
+                    {
+                        <tr><td>@(rows8.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td><td><input type="text" class="form-control" @bind="row.Dato5" /></td><td><input type="text" class="form-control" @bind="row.Dato6" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-primary" @onclick="() => rows8.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 9 -->
+    <div class="card mb-5 border-secondary shadow-sm">
+        <div class="card-header bg-secondary text-white"><h3 class="card-title mb-0">9. Residente unidad</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Resisdente unidad Id</th><th>Usuario Id</th><th>Unidad Id</th><th>Es propietario</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows9)
+                    {
+                        <tr><td>@(rows9.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-secondary" @onclick="() => rows9.Add(new TableRow())">Guardar y Agregar Fila</button>
+        </div>
+    </div>
+
+    <!-- TABLA 10 -->
+    <div class="card mb-5 border-info shadow-sm">
+        <div class="card-header bg-info text-white"><h3 class="card-title mb-0">10.Rol</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Rol Id</th><th>Nombre</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows10)
+                    {
+                        <tr><td>@(rows10.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-info text-white" @onclick="() => rows10.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 11 -->
+    <div class="card mb-5 border-success shadow-sm">
+        <div class="card-header bg-success text-white"><h3 class="card-title mb-0">11. Tipo de mantenimiento</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Tipo de mantenimiento Id</th><th>Nombre</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows11)
+                    {
+                        <tr><td>@(rows11.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-success" @onclick="() => rows11.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 12 -->
+    <div class="card mb-5 border-warning shadow-sm">
+        <div class="card-header bg-warning text-dark"><h3 class="card-title mb-0">12. Tabla 12</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Atributo 1</th><th>Atributo 2</th><th>Atributo 3</th><th>Atributo 4</th><th>Atributo 5</th><th>Atributo 6</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows12)
+                    {
+                        <tr><td>@(rows12.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td><td><input type="text" class="form-control" @bind="row.Dato5" /></td><td><input type="text" class="form-control" @bind="row.Dato6" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-warning" @onclick="() => rows12.Add(new TableRow())">Guardar y Agregar Fila</button>
+        </div>
+    </div>
+
+    <!-- TABLA 13 -->
+    <div class="card mb-5 border-danger shadow-sm">
+        <div class="card-header bg-danger text-white"><h3 class="card-title mb-0">13. Torre</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Torre Id</th><th>Conjunto Id</th><th>Nombre</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows13)
+                    {
+                        <tr><td>@(rows13.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-danger" @onclick="() => rows13.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 14 -->
+    <div class="card mb-5 border-secondary shadow-sm">
+        <div class="card-header bg-secondary text-white"><h3 class="card-title mb-0">14. Usuario</h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Usuario Id</th><th>Rol Id</th><th>Documento</th><th>Email</th><th>Télefono</th><th>Activo</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows14)
+                    {
+                        <tr><td>@(rows14.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td><td><input type="text" class="form-control" @bind="row.Dato5" /></td><td><input type="text" class="form-control" @bind="row.Dato6" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-secondary" @onclick="() => rows14.Add(new TableRow())">Guardar</button>
+        </div>
+    </div>
+
+    <!-- TABLA 15 -->
+    <div class="card mb-5 border-info shadow-sm">
+        <div class="card-header bg-info text-white"><h3 class="card-title mb-0">15. Zona común </h3></div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead><tr><th style="width: 50px">#</th><th>Zona común Id</th><th>Nombre</th><th>Requiere pago</th><th>Valor hora</th></tr></thead>
+                <tbody>
+                    @foreach (var row in rows15)
+                    {
+                        <tr><td>@(rows15.IndexOf(row) + 1)</td><td><input type="text" class="form-control" @bind="row.Dato1" /></td><td><input type="text" class="form-control" @bind="row.Dato2" /></td><td><input type="text" class="form-control" @bind="row.Dato3" /></td><td><input type="text" class="form-control" @bind="row.Dato4" /></td></tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-info text-white" @onclick="() => rows15.Add(new TableRow())">Guardar y Agregar Fila</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Definimos las 15 listas independientes de forma explícita
+    private List<TableRow> rows1 = new() { new TableRow() };
+    private List<TableRow> rows2 = new() { new TableRow() };
+    private List<TableRow> rows3 = new() { new TableRow() };
+    private List<TableRow> rows4 = new() { new TableRow() };
+    private List<TableRow> rows5 = new() { new TableRow() };
+    private List<TableRow> rows6 = new() { new TableRow() };
+    private List<TableRow> rows7 = new() { new TableRow() };
+    private List<TableRow> rows8 = new() { new TableRow() };
+    private List<TableRow> rows9 = new() { new TableRow() };
+    private List<TableRow> rows10 = new() { new TableRow() };
+    private List<TableRow> rows11 = new() { new TableRow() };
+    private List<TableRow> rows12 = new() { new TableRow() };
+    private List<TableRow> rows13 = new() { new TableRow() };
+    private List<TableRow> rows14 = new() { new TableRow() };
+    private List<TableRow> rows15 = new() { new TableRow() };
+
+    public class TableRow
+    {
+        public string Dato1 { get; set; } = "";
+        public string Dato2 { get; set; } = "";
+        public string Dato3 { get; set; } = "";
+        public string Dato4 { get; set; } = "";
+        public string Dato5 { get; set; } = "";
+        public string Dato6 { get; set; } = "";
+    }
+}
