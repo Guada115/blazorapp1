@@ -1,0 +1,19 @@
+<span class="badge @BadgeClass rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.75rem;">
+    @Status
+</span>
+
+<style>
+    .badge-primary-soft { background-color: #e0e7ff; color: #4338ca; }
+    .badge-success-soft { background-color: #d1fae5; color: #065f46; }
+    .badge-warning-soft { background-color: #fef3c7; color: #92400e; }
+    .badge-danger-soft { background-color: #fee2e2; color: #991b1b; }
+    .badge-info-soft { background-color: #e0f2fe; color: #075985; }
+    .badge-secondary-soft { background-color: #f1f5f9; color: #475569; }
+</style>
+
+@code {
+    [Parameter] public string Status { get; set; } = "Active";
+    [Parameter] public string Type { get; set; } = "primary"; // primary, success, warning, danger, info, secondary
+
+    private string BadgeClass => $"badge-{Type}-soft";
+}

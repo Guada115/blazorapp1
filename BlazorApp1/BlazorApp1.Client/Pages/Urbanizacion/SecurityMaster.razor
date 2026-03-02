@@ -1,0 +1,131 @@
+@page "/urbanizacion/seguridad"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Seguridad & Acceso - Apex Housing</PageTitle>
+
+<div class="container-fluid py-4 animate-up">
+    <div class="d-flex justify-content-between align-items-end mb-4 page-header">
+        <div>
+            <h1 class="fw-bold mb-1">Seguridad & Acceso</h1>
+            <p class="text-muted mb-0">Control de entradas, bitácora de vigilancia y gestión de parqueaderos.</p>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm d-inline-flex border overflow-auto flex-nowrap w-100">
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "ingresos" ? "active" : "") fw-semibold px-4 text-nowrap" @onclick='() => SetTab("ingresos")'>
+                <i class="bi bi-door-open me-2"></i> Ingresos
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "bitacora" ? "active" : "") fw-semibold px-4 text-nowrap" @onclick='() => SetTab("bitacora")'>
+                <i class="bi bi-journal-text me-2"></i> Bitácora
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "parqueadero" ? "active" : "") fw-semibold px-4 text-nowrap" @onclick='() => SetTab("parqueadero")'>
+                <i class="bi bi-p-square me-2"></i> Parqueaderos
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "visitantes" ? "active" : "") fw-semibold px-4 text-nowrap" @onclick='() => SetTab("visitantes")'>
+                <i class="bi bi-p-square-fill me-2"></i> Visitantes
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content transition-fade">
+        @if (activeTab == "ingresos")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Registro de Entradas"
+                         Headers='new() { "Fecha Hora", "Visitante", "Placa", "Destino (Apt)" }'
+                         Items="ingresoRows"
+                         OnAddRow='() => AddRow(ingresoRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Fecha Hora" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Visitante" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Placa" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Destino (Apt)" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+        else if (activeTab == "bitacora")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Registros de Vigilancia"
+                         Headers='new() { "Fecha Hora", "Vigilante", "Evento", "Observación" }'
+                         Items="bitacoraRows"
+                         OnAddRow='() => AddRow(bitacoraRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Fecha Hora" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Vigilante" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Evento" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Observación" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+        else if (activeTab == "parqueadero")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Espacios de Parqueo"
+                         Headers='new() { "Parqueadero Id", "Torre Id", "Estado" }'
+                         Items="parqueaderoRows"
+                         OnAddRow='() => AddRow(parqueaderoRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Parqueadero Id" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Torre Id" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Estado" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+        else if (activeTab == "visitantes")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Cupos de Visitantes"
+                         Headers='new() { "Parqueadero Id", "Estado", "Visitante Actual" }'
+                         Items="visitanteRows"
+                         OnAddRow='() => AddRow(visitanteRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Parqueadero Id" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Estado" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Visitante" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+    </div>
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+        border-radius: var(--radius-sm);
+    }
+    
+    .nav-pills .nav-link.active {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .transition-fade {
+        animation: fadeIn 0.4s ease-out;
+    }
+</style>
+
+@code {
+    private string activeTab = "ingresos";
+    
+    private List<TableRow> ingresoRows = new() { new TableRow() };
+    private List<TableRow> bitacoraRows = new() { new TableRow() };
+    private List<TableRow> parqueaderoRows = new() { new TableRow() };
+    private List<TableRow> visitanteRows = new() { new TableRow() };
+
+    private void SetTab(string tab) => activeTab = tab;
+
+    private void AddRow(List<TableRow> target)
+    {
+        target.Add(new TableRow());
+    }
+}

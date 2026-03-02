@@ -1,0 +1,47 @@
+<div class="card h-100 border-0 shadow-sm animate-up">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="icon-shape @IconBgClass text-white rounded-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi @Icon fs-4"></i>
+            </div>
+            @if (!string.IsNullOrEmpty(Trend))
+            {
+                <span class="badge @TrendClass rounded-pill px-2 py-1">
+                    <i class="bi @TrendIcon me-1"></i> @Trend
+                </span>
+            }
+        </div>
+        <div>
+            <h6 class="text-muted fw-medium mb-1">@Label</h6>
+            <h3 class="fw-bold mb-0">@Value</h3>
+        </div>
+    </div>
+</div>
+
+<style>
+    .icon-shape {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .badge-success-soft {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    
+    .badge-danger-soft {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+</style>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Metric";
+    [Parameter] public string Value { get; set; } = "0";
+    [Parameter] public string Icon { get; set; } = "bi-graph-up";
+    [Parameter] public string IconBgClass { get; set; } = "bg-primary";
+    [Parameter] public string Trend { get; set; } = "";
+    [Parameter] public string TrendDirection { get; set; } = "up"; // up, down, neutral
+
+    private string TrendClass => TrendDirection == "up" ? "badge-success-soft" : "badge-danger-soft";
+    private string TrendIcon => TrendDirection == "up" ? "bi-arrow-up" : "bi-arrow-down";
+}

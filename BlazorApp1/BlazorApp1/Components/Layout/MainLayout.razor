@@ -1,20 +1,81 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
+<div class="page overflow-hidden">
+    <div class="sidebar glass">
         <NavMenu />
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <main class="h-100 overflow-auto">
+        <header class="top-row px-4 d-flex justify-content-between align-items-center glass shadow-sm mb-0 no-print" style="height: 64px;">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-list-nested d-md-none fs-4 cursor-pointer"></i>
+                <div class="vr mx-2 d-none d-md-block opacity-10"></div>
+                <div class="text-muted small d-none d-md-block">
+                    <i class="bi bi-geo-alt me-1"></i> Administración Central Apex
+                </div>
+            </div>
+            
+            <div class="d-flex align-items-center gap-4">
+                <div class="position-relative">
+                    <i class="bi bi-bell fs-5 cursor-pointer text-muted"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light p-1" style="font-size: 0.5rem;">
+                        3
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-2 cursor-pointer">
+                    <div class="avatar-circle bg-primary-soft text-primary fw-bold">AD</div>
+                    <div class="d-none d-sm-block">
+                        <div class="user-name fw-semibold lh-1">Administrador</div>
+                        <div class="user-role text-muted" style="font-size: 0.7rem;">Súper Usuario</div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-        <article class="content px-4">
+        <article class="content px-md-5 py-4">
             @Body
         </article>
     </main>
 </div>
+
+<style>
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+    
+    .cursor-pointer { cursor: pointer; }
+    
+    .bg-primary-soft { background-color: #e0e7ff; color: #4338ca; }
+    
+    main {
+        background-color: #f8fafc;
+        min-height: 100vh;
+    }
+    
+    .page {
+        display: flex;
+        height: 100vh;
+    }
+    
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        z-index: 1000;
+        border-right: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    @@media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+    }
+</style>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

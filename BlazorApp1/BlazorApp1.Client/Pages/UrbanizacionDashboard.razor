@@ -1,0 +1,126 @@
+@page "/urbanizacion"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Dashboard - Apex Housing</PageTitle>
+
+<div class="container-fluid py-4 animate-up">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-end mb-4 page-header">
+        <div>
+            <h1 class="fw-bold mb-1">Vista General del Edificio</h1>
+            <p class="text-muted mb-0">Bienvenido al panel de administración de Apex Housing.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i> Reporte Diario
+            </button>
+        </div>
+    </div>
+
+    <!-- Metrics Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-sm-6">
+            <MetricCard Label="Apartamentos" Value="128" Icon="bi-building" IconBgClass="bg-primary" Trend="+2" TrendDirection="up" />
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <MetricCard Label="Residentes Activos" Value="412" Icon="bi-people" IconBgClass="bg-success" Trend="+15" TrendDirection="up" />
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <MetricCard Label="Visitantes Hoy" Value="24" Icon="bi-door-open" IconBgClass="bg-info" Trend="-5%" TrendDirection="down" />
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <MetricCard Label="Mantenimientos" Value="8" Icon="bi-tools" IconBgClass="bg-warning" Trend="Pendientes" TrendDirection="neutral" />
+        </div>
+    </div>
+
+    <!-- Reorganized Categories -->
+    <div class="row g-4">
+        @foreach (var category in categories)
+        {
+            <div class="col-12">
+                <h4 class="fw-bold mb-3 d-flex align-items-center">
+                    <span class="badge @category.BadgeClass rounded-pill me-2" style="width: 10px; height: 10px; padding: 0;">&nbsp;</span>
+                    @category.Title
+                </h4>
+                <div class="row g-4">
+                    @foreach (var module in category.Modules)
+                    {
+                        <div class="col-md-3 col-sm-6">
+                            <a href="@category.MasterUrl" class="text-decoration-none">
+                                <div class="card h-100 border-0 shadow-sm module-card">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="icon-box-small @module.BgClass me-3">
+                                                <i class="bi @module.Icon text-white"></i>
+                                            </div>
+                                            <h6 class="fw-bold mb-0 text-dark">@module.Name</h6>
+                                        </div>
+                                        <p class="text-muted small mb-0">@module.Description</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .icon-box-small {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    
+    .module-card {
+        transition: all 0.2s ease;
+    }
+    
+    .module-card:hover {
+        background-color: var(--primary);
+        transform: translateY(-5px);
+    }
+    
+    .module-card:hover h6, 
+    .module-card:hover p {
+        color: white !important;
+    }
+    
+    .bg-indigo { background: #6366f1; }
+    .bg-teal { background: #14b8a6; }
+    .bg-rose { background: #f43f5e; }
+    .bg-amber { background: #f59e0b; }
+</style>
+
+@code {
+    private List<CategoryGroup> categories = new()
+    {
+        new("Administración & Residentes", "bg-indigo", "/urbanizacion/admin", new List<ModuleItem> {
+            new("Apartamentos", "bi-building", "bg-indigo", "Unidades y áreas."),
+            new("Torres", "bi-layers", "bg-indigo", "Estructura física."),
+            new("Residentes", "bi-person-badge", "bg-indigo", "Gestión de personas."),
+            new("Usuarios", "bi-people", "bg-indigo", "Cuentas de sistema.")
+        }),
+        new("Seguridad & Accesos", "bg-rose", "/urbanizacion/seguridad", new List<ModuleItem> {
+            new("Ingresos", "bi-door-open", "bg-rose", "Control de entradas."),
+            new("Bitácora", "bi-journal-text", "bg-rose", "Registros de vigilancia."),
+            new("Parqueaderos", "bi-p-square", "bg-rose", "Espacios asignados."),
+            new("Parq. Visitantes", "bi-p-square-fill", "bg-rose", "Control de visitas.")
+        }),
+        new("Servicios & Mantenimiento", "bg-teal", "/urbanizacion/operaciones", new List<ModuleItem> {
+            new("Reservas", "bi-calendar-check", "bg-teal", "Uso de zonas comunes."),
+            new("Zonas Comunes", "bi-tree", "bg-teal", "Áreas compartidas."),
+            new("Mantenimientos", "bi-tools", "bg-teal", "Correctivos y preventivos."),
+            new("Tipos Mant.", "bi-gear", "bg-teal", "Configuración.")
+        })
+    };
+
+    public record CategoryGroup(string Title, string BadgeClass, string MasterUrl, List<ModuleItem> Modules);
+    public record ModuleItem(string Name, string Icon, string BgClass, string Description);
+}

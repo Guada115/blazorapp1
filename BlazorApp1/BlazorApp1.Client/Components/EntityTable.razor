@@ -1,0 +1,108 @@
+@typeparam TItem
+
+<div class="card mb-5 border-0 shadow-sm animate-fade-in">
+    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold mb-0 text-dark">@Title</h5>
+            <small class="text-muted">Total: @(Items?.Count ?? 0) registros</small>
+        </div>
+        <div class="d-flex gap-3">
+            <div class="input-group input-group-sm" style="width: 250px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar..." @bind="SearchTerm" @bind:event="oninput" />
+            </div>
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" @onclick="OnAddRow">
+                <i class="bi bi-plus-lg"></i> @ButtonText
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 60px">#</th>
+                        @foreach (var header in Headers)
+                        {
+                            <th>@header</th>
+                        }
+                        <th class="text-end pe-4" style="width: 100px">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Items != null)
+                    {
+                        @foreach (var item in FilteredItems)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted small fw-medium">@(Items.IndexOf(item) + 1)</td>
+                                @RowTemplate(item)
+                                <td class="text-end pe-4">
+                                    <div class="dropdown">
+                                        <button class="btn btn-icon btn-light btn-sm" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 glass">
+                                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-pencil me-2"></i> Editar</a></li>
+                                            <li><a class="dropdown-item py-2 text-danger" href="#"><i class="bi bi-trash me-2"></i> Eliminar</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+    
+    .table thead th {
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        background-color: #f8fafc;
+        color: #64748b;
+        border-top: none;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+    
+    .dropdown-item {
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .dropdown-item:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+</style>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string ButtonText { get; set; } = "Nuevo Registro";
+    [Parameter] public List<string> Headers { get; set; } = new();
+    [Parameter] public List<TItem> Items { get; set; } = new();
+    [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = default!;
+    [Parameter] public EventCallback OnAddRow { get; set; }
+    
+    private string SearchTerm { get; set; } = "";
+
+    private IEnumerable<TItem> FilteredItems => string.IsNullOrWhiteSpace(SearchTerm) 
+        ? Items 
+        : Items.Where(i => i.ToString().Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+}

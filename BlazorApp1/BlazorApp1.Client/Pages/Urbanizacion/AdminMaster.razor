@@ -1,0 +1,111 @@
+@page "/urbanizacion/admin"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Administración - Apex Housing</PageTitle>
+
+<div class="container-fluid py-4 animate-up">
+    <div class="d-flex justify-content-between align-items-end mb-4 page-header">
+        <div>
+            <h1 class="fw-bold mb-1">Panel Administrativo</h1>
+            <p class="text-muted mb-0">Gestión de la copropiedad, personal y niveles de acceso.</p>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm d-inline-flex border">
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "conjunto" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("conjunto")'>
+                <i class="bi bi-houses me-2"></i> Conjunto
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "usuarios" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("usuarios")'>
+                <i class="bi bi-people me-2"></i> Usuarios
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "roles" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("roles")'>
+                <i class="bi bi-shield-lock me-2"></i> Roles
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content transition-fade">
+        @if (activeTab == "conjunto")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Datos del Conjunto"
+                         Headers='new() { "Nombre", "Dirección", "NIT", "Teléfono" }'
+                         Items="conjuntoRows"
+                         OnAddRow='() => AddRow(conjuntoRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Nombre" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Dirección" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="NIT" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Teléfono" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+        else if (activeTab == "usuarios")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Listado de Usuarios"
+                         Headers='new() { "Nombre", "Apellido", "Correo", "Teléfono", "Rol Id" }'
+                         Items="usuariosRows"
+                         OnAddRow='() => AddRow(usuariosRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Nombre" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Apellido" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Correo" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Teléfono" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato5" placeholder="Rol Id" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+        else if (activeTab == "roles")
+        {
+            <EntityTable TItem="TableRow"
+                         Title="Listado de Roles"
+                         Headers='new() { "Rol Id", "Nombre Rol" }'
+                         Items="rolesRows"
+                         OnAddRow='() => AddRow(rolesRows)'>
+                <RowTemplate Context="row">
+                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Rol Id" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Nombre Rol" /></td>
+                </RowTemplate>
+            </EntityTable>
+        }
+    </div>
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+        border-radius: var(--radius-sm);
+    }
+    
+    .nav-pills .nav-link.active {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .transition-fade {
+        animation: fadeIn 0.4s ease-out;
+    }
+</style>
+
+@code {
+    private string activeTab = "conjunto";
+    
+    private List<TableRow> conjuntoRows = new() { new TableRow() };
+    private List<TableRow> usuariosRows = new() { new TableRow() };
+    private List<TableRow> rolesRows = new() { new TableRow() };
+
+    private void SetTab(string tab) => activeTab = tab;
+
+    private void AddRow(List<TableRow> target)
+    {
+        target.Add(new TableRow());
+    }
+}
