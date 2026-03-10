@@ -1,5 +1,6 @@
 @page "/urbanizacion/residencial"
 @rendermode InteractiveWebAssembly
+@inject HttpClient Http
 
 <PageTitle>Gestión Residencial - Apex Housing</PageTitle>
 
@@ -34,50 +35,79 @@
     <div class="tab-content transition-fade">
         @if (activeTab == "torres")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="Torre"
                          Title="Listado de Torres"
-                         Headers='new() { "Torre Id", "Nombre Torre" }'
+                         Headers='new() { "Conjunto", "Nombre Torre" }'
                          Items="torreRows"
                          OnAddRow='() => AddRow(torreRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Torre Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Nombre Torre" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.ConjuntoId">
+                            <option value="0">Seleccionar Conjunto...</option>
+                            @foreach (var c in allConjuntos)
+                            {
+                                <option value="@c.ConjuntoId">@c.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre Torre" /></td>
                 </RowTemplate>
             </EntityTable>
         }
         else if (activeTab == "apartamentos")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="Apartamento"
                          Title="Listado de Apartamentos"
-                         Headers='new() { "Unidad", "Torre Id", "Tipo", "Estado", "Propietario" }'
+                         Headers='new() { "Número", "Torre", "Tipo", "Área" }'
                          Items="apartamentoRows"
                          OnAddRow='() => AddRow(apartamentoRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Unidad" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Torre Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Tipo" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
                     <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <StatusBadge Status="@(string.IsNullOrEmpty(row.Dato4) ? "Disponible" : row.Dato4)" 
-                                         Type='@(row.Dato4 == "Ocupado" ? "danger" : "success")' />
-                            <input type="text" class="form-control form-control-sm w-50" @bind="row.Dato4" placeholder="Editar Estado" />
-                        </div>
+                        <select class="form-select" @bind="row.TorreId">
+                            <option value="0">Seleccionar Torre...</option>
+                            @foreach (var t in torreRows)
+                            {
+                                <option value="@t.TorreId">@t.Nombre</option>
+                            }
+                        </select>
                     </td>
-                    <td><input type="text" class="form-control" @bind="row.Dato5" placeholder="Propietario" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
+                    <td><input type="number" class="form-control" @bind="row.Area" placeholder="Área" /></td>
                 </RowTemplate>
             </EntityTable>
         }
         else if (activeTab == "residentes")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="ResidenteUnidad"
                          Title="Listado de Residentes"
-                         Headers='new() { "Residente Id", "Torre Id", "Unidad" }'
+                         Headers='new() { "Usuario", "Unidad", "Es Propietario" }'
                          Items="residenteRows"
                          OnAddRow='() => AddRow(residenteRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Residente Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Torre Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Unidad" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.UsuarioId">
+                            <option value="0">Seleccionar Usuario...</option>
+                            @foreach (var u in allUsuarios)
+                            {
+                                <option value="@u.UsuarioId">@u.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.UnidadId">
+                            <option value="0">Seleccionar Unidad...</option>
+                            @foreach (var a in apartamentoRows)
+                            {
+                                <option value="@a.UnidadId">@a.Numero (@a.Tipo)</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" @bind="row.EsPropietario" />
+                        </div>
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -103,14 +133,39 @@
 @code {
     private string activeTab = "torres";
     
-    private List<TableRow> torreRows = new() { new TableRow() };
-    private List<TableRow> apartamentoRows = new() { new TableRow() };
-    private List<TableRow> residenteRows = new() { new TableRow() };
+    private List<Torre> torreRows = new();
+    private List<Apartamento> apartamentoRows = new();
+    private List<ResidenteUnidad> residenteRows = new();
+    private List<Conjunto> allConjuntos = new();
+    private List<Usuario> allUsuarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            torreRows = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new();
+            apartamentoRows = await Http.GetFromJsonAsync<List<Apartamento>>("api/apartamentos") ?? new();
+            residenteRows = await Http.GetFromJsonAsync<List<ResidenteUnidad>>("api/residentesunidades") ?? new();
+            allConjuntos = await Http.GetFromJsonAsync<List<Conjunto>>("api/conjuntos") ?? new();
+            allUsuarios = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new();
+            
+            if (torreRows.Count == 0) torreRows.Add(new Torre());
+            if (apartamentoRows.Count == 0) apartamentoRows.Add(new Apartamento());
+            if (residenteRows.Count == 0) residenteRows.Add(new ResidenteUnidad());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar datos: {ex.Message}");
+            if (torreRows.Count == 0) torreRows.Add(new Torre());
+            if (apartamentoRows.Count == 0) apartamentoRows.Add(new Apartamento());
+            if (residenteRows.Count == 0) residenteRows.Add(new ResidenteUnidad());
+        }
+    }
 
     private void SetTab(string tab) => activeTab = tab;
 
-    private void AddRow(List<TableRow> target)
+    private void AddRow<T>(List<T> target) where T : new()
     {
-        target.Add(new TableRow());
+        target.Add(new T());
     }
 }

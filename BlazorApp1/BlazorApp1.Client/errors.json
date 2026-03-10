@@ -1,0 +1,531 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Compilador de Microsoft (R) Visual C#",
+        "version": "5.0.0.0",
+        "fileVersion": "5.0.0-2.26075.103 (c2435c3e)",
+        "semanticVersion": "5.0.0",
+        "language": "es-MX"
+      },
+      "results": [
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Desreferencia de una referencia posiblemente NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Components/EntityTable.razor",
+                "region": {
+                  "startLine": 107,
+                  "startColumn": 28,
+                  "endLine": 107,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Desreferencia de una referencia posiblemente NULL.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Components/EntityTable.razor",
+                "region": {
+                  "startLine": 107,
+                  "startColumn": 28,
+                  "endLine": 107,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/SecurityMaster.razor",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 82,
+                  "endLine": 51,
+                  "endColumn": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 374,
+                  "startColumn": 161,
+                  "endLine": 374,
+                  "endColumn": 168
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/SecurityMaster.razor",
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 82,
+                  "endLine": 52,
+                  "endColumn": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 392,
+                  "startColumn": 161,
+                  "endLine": 392,
+                  "endColumn": 168
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1662",
+          "level": "error",
+          "message": "No se puede convertir expresión lambda en el tipo delegado indicado porque algunos de los tipos de valores devueltos del bloque no se pueden convertir implícitamente en el tipo de valor devuelto del delegado",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 303,
+                  "startColumn": 131,
+                  "endLine": 303,
+                  "endColumn": 146
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/SecurityMaster.razor",
+                "region": {
+                  "startLine": 66,
+                  "startColumn": 82,
+                  "endLine": 66,
+                  "endColumn": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 530,
+                  "startColumn": 162,
+                  "endLine": 530,
+                  "endColumn": 169
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1662",
+          "level": "error",
+          "message": "No se puede convertir expresión lambda en el tipo delegado indicado porque algunos de los tipos de valores devueltos del bloque no se pueden convertir implícitamente en el tipo de valor devuelto del delegado",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 497,
+                  "startColumn": 131,
+                  "endLine": 497,
+                  "endColumn": 146
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/SecurityMaster.razor",
+                "region": {
+                  "startLine": 94,
+                  "startColumn": 82,
+                  "endLine": 94,
+                  "endColumn": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 807,
+                  "startColumn": 162,
+                  "endLine": 807,
+                  "endColumn": 169
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/SecurityMaster.razor",
+                "region": {
+                  "startLine": 95,
+                  "startColumn": 82,
+                  "endLine": 95,
+                  "endColumn": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 825,
+                  "startColumn": 162,
+                  "endLine": 825,
+                  "endColumn": 169
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1662",
+          "level": "error",
+          "message": "No se puede convertir expresión lambda en el tipo delegado indicado porque algunos de los tipos de valores devueltos del bloque no se pueden convertir implícitamente en el tipo de valor devuelto del delegado",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_SecurityMaster_razor.g.cs",
+                "region": {
+                  "startLine": 774,
+                  "startColumn": 132,
+                  "endLine": 774,
+                  "endColumn": 147
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/OperationsMaster.razor",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 72,
+                  "endLine": 50,
+                  "endColumn": 81
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 355,
+                  "startColumn": 161,
+                  "endLine": 355,
+                  "endColumn": 168
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/OperationsMaster.razor",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 72,
+                  "endLine": 51,
+                  "endColumn": 81
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 373,
+                  "startColumn": 161,
+                  "endLine": 373,
+                  "endColumn": 168
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/OperationsMaster.razor",
+                "region": {
+                  "startLine": 52,
+                  "startColumn": 72,
+                  "endLine": 52,
+                  "endColumn": 81
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 391,
+                  "startColumn": 161,
+                  "endLine": 391,
+                  "endColumn": 168
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1662",
+          "level": "error",
+          "message": "No se puede convertir expresión lambda en el tipo delegado indicado porque algunos de los tipos de valores devueltos del bloque no se pueden convertir implícitamente en el tipo de valor devuelto del delegado",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 303,
+                  "startColumn": 131,
+                  "endLine": 303,
+                  "endColumn": 146
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1503",
+          "level": "error",
+          "message": "Argumento 1: no se puede convertir de 'string' a 'System.DateTime'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/Pages/Urbanizacion/OperationsMaster.razor",
+                "region": {
+                  "startLine": 84,
+                  "startColumn": 72,
+                  "endLine": 84,
+                  "endColumn": 81
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS0029",
+          "level": "error",
+          "message": "No se puede convertir implícitamente el tipo 'System.TimeOnly?' en 'string'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 670,
+                  "startColumn": 162,
+                  "endLine": 670,
+                  "endColumn": 169
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS1662",
+          "level": "error",
+          "message": "No se puede convertir expresión lambda en el tipo delegado indicado porque algunos de los tipos de valores devueltos del bloque no se pueden convertir implícitamente en el tipo de valor devuelto del delegado",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/idgtr/OneDrive/Escritorio/appblazor/blazorapp1/BlazorApp1/BlazorApp1.Client/obj/Debug/net10.0/Microsoft.CodeAnalysis.Razor.Compiler/Microsoft.NET.Sdk.Razor.SourceGenerators.RazorSourceGenerator/Pages_Urbanizacion_OperationsMaster_razor.g.cs",
+                "region": {
+                  "startLine": 637,
+                  "startColumn": 132,
+                  "endLine": 637,
+                  "endColumn": 147
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "rules": {
+        "CS0029": {
+          "id": "CS0029",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0029)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS1503": {
+          "id": "CS1503",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS1662": {
+          "id": "CS1662",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1662)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        },
+        "CS8602": {
+          "id": "CS8602",
+          "shortDescription": "Desreferencia de una referencia posiblemente NULL.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8602)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 @page "/urbanizacion/operaciones"
 @rendermode InteractiveWebAssembly
+@inject HttpClient Http
 
 <PageTitle>Operaciones - Apex Housing</PageTitle>
 
@@ -39,58 +40,98 @@
     <div class="tab-content transition-fade">
         @if (activeTab == "reservas")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="Reserva"
                          Title="Listado de Reservas"
-                         Headers='new() { "Reserva Id", "Zona Id", "Residente Id", "Fecha Hora" }'
+                         Headers='new() { "Zona Común", "Usuario", "Fecha", "Inicio", "Fin", "Estado" }'
                          Items="reservaRows"
                          OnAddRow='() => AddRow(reservaRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Reserva Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Zona Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Residente Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Fecha Hora" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.ZonaComunId">
+                            <option value="0">Seleccionar Zona...</option>
+                            @foreach (var z in zonaRows)
+                            {
+                                <option value="@z.ZonaComunId">@z.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.UsuarioId">
+                            <option value="0">Seleccionar Usuario...</option>
+                            @foreach (var u in allUsuarios)
+                            {
+                                <option value="@u.UsuarioId">@u.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input type="date" class="form-control" @bind="row.Fecha" /></td>
+                    <td><input type="time" class="form-control" @bind="row.HoraInicio" /></td>
+                    <td><input type="time" class="form-control" @bind="row.HoraFin" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Estado" placeholder="Estado" /></td>
                 </RowTemplate>
             </EntityTable>
         }
         else if (activeTab == "zonas")
         {
-            <EntityTable TItem="TableRow"
-                         Title="Listado de Zonas"
-                         Headers='new() { "Zona Id", "Nombre Zona", "Capacidad" }'
+            <EntityTable TItem="ZonaComun"
+                         Title="Listado de Zonas Comunes"
+                         Headers='new() { "Nombre", "Pago Requerido", "Valor Hora" }'
                          Items="zonaRows"
                          OnAddRow='() => AddRow(zonaRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Zona Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Nombre Zona" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Capacidad" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
+                    <td>
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" @bind="row.RequierePago" />
+                        </div>
+                    </td>
+                    <td><input type="number" class="form-control" @bind="row.ValorHora" placeholder="Valor Hora" /></td>
                 </RowTemplate>
             </EntityTable>
         }
         else if (activeTab == "mantenimiento")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="Mantenimiento"
                          Title="Registro de Mantenimientos"
-                         Headers='new() { "Id", "Nombre", "Tipo Id", "Costo" }'
+                         Headers='new() { "Tipo", "Fecha", "Proveedor", "Descripción", "Costo", "Zona" }'
                          Items="mantenimientoRows"
                          OnAddRow='() => AddRow(mantenimientoRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Nombre" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato3" placeholder="Tipo Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato4" placeholder="Costo" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.TipoMantenimientoId">
+                            <option value="0">Seleccionar Tipo...</option>
+                            @foreach (var t in tipoRows)
+                            {
+                                <option value="@t.TipoMantenimientoId">@t.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input type="date" class="form-control" @bind="row.Fecha" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Provider" placeholder="Proveedor" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Descripcion" placeholder="Descripción" /></td>
+                    <td><input type="number" class="form-control" @bind="row.Costo" placeholder="Costo" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.ZonaComunId">
+                            <option value="0">Seleccionar Zona...</option>
+                            @foreach (var z in zonaRows)
+                            {
+                                <option value="@z.ZonaComunId">@z.Nombre</option>
+                            }
+                        </select>
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
         else if (activeTab == "tipos")
         {
-            <EntityTable TItem="TableRow"
+            <EntityTable TItem="TipoMantenimiento"
                          Title="Tipos de Mantenimiento"
-                         Headers='new() { "Tipo Id", "Nombre" }'
+                         Headers='new() { "ID", "Nombre" }'
                          Items="tipoRows"
                          OnAddRow='() => AddRow(tipoRows)'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Dato1" placeholder="Tipo Id" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Dato2" placeholder="Nombre" /></td>
+                    <td><input type="number" class="form-control" @bind="row.TipoMantenimientoId" placeholder="ID" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -116,15 +157,41 @@
 @code {
     private string activeTab = "reservas";
     
-    private List<TableRow> reservaRows = new() { new TableRow() };
-    private List<TableRow> zonaRows = new() { new TableRow() };
-    private List<TableRow> mantenimientoRows = new() { new TableRow() };
-    private List<TableRow> tipoRows = new() { new TableRow() };
+    private List<Reserva> reservaRows = new();
+    private List<ZonaComun> zonaRows = new();
+    private List<Mantenimiento> mantenimientoRows = new();
+    private List<TipoMantenimiento> tipoRows = new();
+    private List<Usuario> allUsuarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            zonaRows = await Http.GetFromJsonAsync<List<ZonaComun>>("api/zonascomunes") ?? new();
+            tipoRows = await Http.GetFromJsonAsync<List<TipoMantenimiento>>("api/tiposmantenimiento") ?? new();
+            reservaRows = await Http.GetFromJsonAsync<List<Reserva>>("api/reservas") ?? new();
+            mantenimientoRows = await Http.GetFromJsonAsync<List<Mantenimiento>>("api/mantenimientos") ?? new();
+            allUsuarios = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new();
+            
+            if (zonaRows.Count == 0) zonaRows.Add(new ZonaComun());
+            if (tipoRows.Count == 0) tipoRows.Add(new TipoMantenimiento());
+            if (reservaRows.Count == 0) reservaRows.Add(new Reserva());
+            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar datos: {ex.Message}");
+            if (zonaRows.Count == 0) zonaRows.Add(new ZonaComun());
+            if (tipoRows.Count == 0) tipoRows.Add(new TipoMantenimiento());
+            if (reservaRows.Count == 0) reservaRows.Add(new Reserva());
+            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento());
+        }
+    }
 
     private void SetTab(string tab) => activeTab = tab;
 
-    private void AddRow(List<TableRow> target)
+    private void AddRow<T>(List<T> target) where T : new()
     {
-        target.Add(new TableRow());
+        target.Add(new T());
     }
 }
