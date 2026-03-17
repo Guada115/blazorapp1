@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+@namespace BlazorApp1.Components.Layout
+@inherits LayoutComponentBase
+@using BlazorApp1.Client.Components
 
 <div class="page overflow-hidden">
     <div class="sidebar glass">
@@ -17,18 +19,12 @@
             
             <div class="d-flex align-items-center gap-4">
                 <div class="position-relative">
-                    <i class="bi bi-bell fs-5 cursor-pointer text-muted"></i>
+                    <i class="bi bi-bell fs-5=" cursor-pointer text-muted"></i>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light p-1" style="font-size: 0.5rem;">
                         3
                     </span>
                 </div>
-                <div class="d-flex align-items-center gap-2 cursor-pointer">
-                    <div class="avatar-circle bg-primary-soft text-primary fw-bold">AD</div>
-                    <div class="d-none d-sm-block">
-                        <div class="user-name fw-semibold lh-1">Administrador</div>
-                        <div class="user-role text-muted" style="font-size: 0.7rem;">Súper Usuario</div>
-                    </div>
-                </div>
+                <UserProfile />
             </div>
         </header>
 

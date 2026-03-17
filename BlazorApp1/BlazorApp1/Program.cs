@@ -3,12 +3,19 @@ using BlazorApp1.Components;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp1.Data;
 using BlazorApp1.Client.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, BlazorApp1.ServerAuthStateProvider>();
 
 var provider = builder.Configuration.GetValue("DatabaseProvider", "PostgreSQL");
 
@@ -42,7 +49,7 @@ else
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
@@ -69,4 +76,16 @@ api.MapGet("/visitantes", async (AppDbContext db) => await db.ParqueaderosVisita
 api.MapGet("/reservas", async (AppDbContext db) => await db.Reservas.ToListAsync());
 api.MapGet("/residentesunidades", async (AppDbContext db) => await db.ResidentesUnidades.ToListAsync());
 
+// Login endpoint
+api.MapPost("/login", async (BlazorApp1.Client.Models.LoginRequest request, AppDbContext db) =>
+{
+    var user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == request.Email && u.Clave == request.Password && u.Activo);
+    if (user != null)
+    {
+        // Simple token containing user info, in a real app use JWT
+        var token = $"{user.UsuarioId}:{user.Email}:{user.RolId}:{user.Nombre}";
+        return Results.Ok(new { Token = token, Nombre = user.Nombre, RolId = user.RolId });
+    }
+    return Results.Unauthorized();
+});
 app.Run();
