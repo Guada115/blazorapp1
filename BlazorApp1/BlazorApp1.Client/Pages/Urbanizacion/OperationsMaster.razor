@@ -1,5 +1,6 @@
 @page "/urbanizacion/operaciones"
 @rendermode InteractiveWebAssembly
+@attribute [Authorize(Roles = "2,3")]
 @inject HttpClient Http
 
 <PageTitle>Operaciones - Apex Housing</PageTitle>

@@ -1,5 +1,6 @@
 @page "/urbanizacion/residencial"
 @rendermode InteractiveWebAssembly
+@attribute [Authorize(Roles = "3")]
 @inject HttpClient Http
 @inject IJSRuntime JS
 

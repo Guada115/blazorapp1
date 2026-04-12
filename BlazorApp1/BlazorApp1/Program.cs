@@ -12,11 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, BlazorApp1.ServerAuthStateProvider>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
@@ -46,7 +46,8 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorApp1.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(BlazorApp1.Client._Imports).Assembly)
+    .AllowAnonymous();
 
 // Minimal API Endpoints
 var api = app.MapGroup("/api").DisableAntiforgery();
@@ -80,7 +81,7 @@ api.MapPost("/residentesunidades", async (AppDbContext db, ResidenteUnidad ru) =
 
 
 // Login endpoint
-api.MapPost("/login", async (BlazorApp1.Shared.Models.LoginRequest request, AppDbContext db) =>
+api.MapPost("/login", async (BlazorApp1.Shared.Models.LoginRequest request, AppDbContext db, HttpContext context) =>
 {
     var user = await db.Usuarios.FirstOrDefaultAsync(u =>
         u.Email == request.Email &&
@@ -89,6 +90,20 @@ api.MapPost("/login", async (BlazorApp1.Shared.Models.LoginRequest request, AppD
 
     if (user != null)
     {
+        // 1) Generar el Cookie para que la vista del Servidor no bloquee al cliente
+        var claims = new List<System.Security.Claims.Claim> {
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, user.UsuarioId.ToString()),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.Nombre),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.Email),
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.RolId.ToString())
+        };
+        var identity = new System.Security.Claims.ClaimsIdentity(claims, Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+        await Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions.SignInAsync(
+            context, 
+            Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme, 
+            new System.Security.Claims.ClaimsPrincipal(identity));
+
+        // 2) Generar el token (para el StateProvider del WASM)
         var token = $"{user.UsuarioId}:{user.Email}:{user.RolId}:{user.Nombre}";
         return Results.Ok(new
         {
