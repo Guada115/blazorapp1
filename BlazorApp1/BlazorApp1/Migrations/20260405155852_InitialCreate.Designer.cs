@@ -3,17 +3,17 @@ using System;
 using BlazorApp1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace BlazorApp1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260316210958_AddClaveUsuario")]
-    partial class AddClaveUsuario
+    [Migration("20260405155852_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,9 +21,9 @@ namespace BlazorApp1.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("BlazorApp1.Client.Models.Apartamento", b =>
                 {
@@ -32,24 +32,24 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("unidadid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("UnidadId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UnidadId"));
 
                     b.Property<decimal>("Area")
-                        .HasColumnType("numeric")
+                        .HasColumnType("decimal(18,2)")
                         .HasColumnName("area");
 
                     b.Property<string>("Numero")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("numero");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("tipo");
 
                     b.Property<int>("TorreId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("torreid");
 
                     b.HasKey("UnidadId");
@@ -64,19 +64,19 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("bitacoraid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("BitacoraId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("BitacoraId"));
 
                     b.Property<DateTime>("FechaHora")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechahora");
 
                     b.Property<string>("Observacion")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("observacion");
 
                     b.Property<int>("VigilanteId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("vigilanteid");
 
                     b.HasKey("BitacoraId");
@@ -91,31 +91,31 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("conjuntoid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ConjuntoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ConjuntoId"));
 
                     b.Property<string>("Ciudad")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("ciudad");
 
                     b.Property<string>("Direccion")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("direccion");
 
                     b.Property<string>("Nit")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nit");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.Property<string>("Telefono")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("telefono");
 
                     b.HasKey("ConjuntoId");
@@ -130,37 +130,37 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("ingresoid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IngresoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IngresoId"));
 
                     b.Property<string>("Documento")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("documento");
 
                     b.Property<DateTime>("FechaHoraIngreso")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechahoraingreso");
 
                     b.Property<DateTime?>("FechaHoraSalida")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechahorasalida");
 
                     b.Property<string>("NombrePersona")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombrepersona");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("tipo");
 
                     b.Property<int>("UnidadId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("unidadid");
 
                     b.Property<int?>("UsuarioId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("usuarioid");
 
                     b.HasKey("IngresoId");
@@ -175,15 +175,15 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("mantenimientoid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MantenimientoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MantenimientoId"));
 
                     b.Property<decimal>("Costo")
-                        .HasColumnType("numeric")
+                        .HasColumnType("decimal(18,2)")
                         .HasColumnName("costo");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("descripcion");
 
                     b.Property<DateOnly>("Fecha")
@@ -192,15 +192,15 @@ namespace BlazorApp1.Migrations
 
                     b.Property<string>("Provider")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("proveedor");
 
                     b.Property<int>("TipoMantenimientoId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("tipomantenimientoid");
 
                     b.Property<int>("ZonaComunId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("zonacomunid");
 
                     b.HasKey("MantenimientoId");
@@ -215,20 +215,20 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("parqueaderoid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ParqueaderoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ParqueaderoId"));
 
                     b.Property<string>("Numero")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("numero");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("tipo");
 
                     b.Property<int>("UnidadId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("unidadid");
 
                     b.HasKey("ParqueaderoId");
@@ -243,27 +243,27 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("parqueaderovisitanteid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ParqueaderoVisitanteId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ParqueaderoVisitanteId"));
 
                     b.Property<DateTime>("FechaHoraIngreso")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechahoraingreso");
 
                     b.Property<DateTime?>("FechaHoraSalida")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechahorasalida");
 
                     b.Property<int>("IngresoId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("ingresoid");
 
                     b.Property<int>("ParqueaderoId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("parqueaderoid");
 
                     b.Property<string>("Placa")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("placa");
 
                     b.HasKey("ParqueaderoVisitanteId");
@@ -278,11 +278,11 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("reservaid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ReservaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ReservaId"));
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("estado");
 
                     b.Property<DateOnly>("Fecha")
@@ -290,19 +290,19 @@ namespace BlazorApp1.Migrations
                         .HasColumnName("fecha");
 
                     b.Property<TimeOnly>("HoraFin")
-                        .HasColumnType("time without time zone")
+                        .HasColumnType("time")
                         .HasColumnName("horafin");
 
                     b.Property<TimeOnly>("HoraInicio")
-                        .HasColumnType("time without time zone")
+                        .HasColumnType("time")
                         .HasColumnName("horainicio");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("usuarioid");
 
                     b.Property<int>("ZonaComunId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("zonacomunid");
 
                     b.HasKey("ReservaId");
@@ -317,18 +317,18 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("residenteunidadid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ResidenteUnidadId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ResidenteUnidadId"));
 
                     b.Property<bool>("EsPropietario")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasColumnName("espropietario");
 
                     b.Property<int>("UnidadId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("unidadid");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("usuarioid");
 
                     b.HasKey("ResidenteUnidadId");
@@ -343,11 +343,11 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("rolid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("RolId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("RolId"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.HasKey("RolId");
@@ -362,11 +362,11 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("tipomantenimientoid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("TipoMantenimientoId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("TipoMantenimientoId"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.HasKey("TipoMantenimientoId");
@@ -381,15 +381,15 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("torreid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("TorreId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("TorreId"));
 
                     b.Property<int>("ConjuntoId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("conjuntoid");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.HasKey("TorreId");
@@ -404,43 +404,42 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("usuarioid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("UsuarioId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UsuarioId"));
 
                     b.Property<bool>("Activo")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasColumnName("activo");
 
                     b.Property<string>("Clave")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("clave");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Documento")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("documento");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("email");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("datetime2")
                         .HasColumnName("fechacreacion");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.Property<int>("RolId")
-                        .HasColumnType("integer")
+                        .HasColumnType("int")
                         .HasColumnName("rolid");
 
                     b.Property<string>("Telefono")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("telefono");
 
                     b.HasKey("UsuarioId");
@@ -455,19 +454,19 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("zonacomunid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ZonaComunId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ZonaComunId"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("nombre");
 
                     b.Property<bool>("RequierePago")
-                        .HasColumnType("boolean")
+                        .HasColumnType("bit")
                         .HasColumnName("requierepago");
 
                     b.Property<decimal>("ValorHora")
-                        .HasColumnType("numeric")
+                        .HasColumnType("decimal(18,2)")
                         .HasColumnName("valorhora");
 
                     b.HasKey("ZonaComunId");

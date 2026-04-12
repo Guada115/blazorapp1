@@ -1,6 +1,7 @@
-@page "/urbanizacion/admin"
+﻿@page "/urbanizacion/admin"
 @rendermode InteractiveWebAssembly
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <PageTitle>Administración - Apex Housing</PageTitle>
 
@@ -8,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-end mb-4 page-header">
         <div>
             <h1 class="fw-bold mb-1">Panel Administrativo</h1>
-            <p class="text-muted mb-0">Gestión de la copropiedad, personal y niveles de acceso.</p>
+            <p class="text-muted mb-0">GestiÃ³n de la copropiedad, personal y niveles de acceso.</p>
         </div>
     </div>
 
@@ -37,15 +38,15 @@
         {
             <EntityTable TItem="Conjunto"
                          Title="Datos del Conjunto"
-                         Headers='new() { "Nombre", "Dirección", "Ciudad", "NIT", "Teléfono" }'
+                         Headers='new() { "Nombre", "DirecciÃ³n", "Ciudad", "NIT", "TelÃ©fono" }'
                          Items="conjuntoRows"
-                         OnAddRow='() => AddRow(conjuntoRows)'>
+                         OnAddRow='() => AddRow(conjuntoRows)' OnSaveRow='SaveConjunto'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Direccion" placeholder="Dirección" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Direccion" placeholder="DirecciÃ³n" /></td>
                     <td><input type="text" class="form-control" @bind="row.Ciudad" placeholder="Ciudad" /></td>
                     <td><input type="text" class="form-control" @bind="row.Nit" placeholder="NIT" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="Teléfono" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="TelÃ©fono" /></td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -53,14 +54,14 @@
         {
             <EntityTable TItem="Usuario"
                          Title="Listado de Usuarios"
-                         Headers='new() { "Nombre", "Documento", "Email", "Teléfono", "Activo", "Rol" }'
+                         Headers='new() { "Nombre", "Documento", "Email", "TelÃ©fono", "Activo", "Rol" }'
                          Items="usuariosRows"
-                         OnAddRow='() => AddRow(usuariosRows)'>
+                         OnAddRow='() => AddRow(usuariosRows)' OnSaveRow='SaveUsuario'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                     <td><input type="text" class="form-control" @bind="row.Documento" placeholder="Documento" /></td>
                     <td><input type="text" class="form-control" @bind="row.Email" placeholder="Email" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="Teléfono" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="TelÃ©fono" /></td>
                     <td>
                         <div class="form-check form-switch mt-1">
                             <input class="form-check-input" type="checkbox" @bind="row.Activo" />
@@ -84,7 +85,7 @@
                          Title="Listado de Roles"
                          Headers='new() { "Rol Id", "Nombre" }'
                          Items="rolesRows"
-                         OnAddRow='() => AddRow(rolesRows)'>
+                         OnAddRow='() => AddRow(rolesRows)' OnSaveRow='SaveRol'>
                 <RowTemplate Context="row">
                     <td><input type="number" class="form-control" @bind="row.RolId" placeholder="Rol Id" /></td>
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
@@ -146,5 +147,77 @@
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private async Task SaveConjunto(Conjunto conjunto)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/conjuntos", conjunto);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Conjunto>();
+                if (saved != null) conjunto.ConjuntoId = saved.ConjuntoId;
+                await JS.InvokeVoidAsync("alert", "Conjunto guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Conjunto: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar el Conjunto. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveUsuario(Usuario usuario)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/usuarios", usuario);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Usuario>();
+                if (saved != null) usuario.UsuarioId = saved.UsuarioId;
+                await JS.InvokeVoidAsync("alert", "Usuario guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Usuario: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar el Usuario. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveRol(Rol rol)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/roles", rol);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Rol>();
+                if (saved != null) rol.RolId = saved.RolId;
+                await JS.InvokeVoidAsync("alert", "Rol guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Rol: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar el Rol. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
     }
 }

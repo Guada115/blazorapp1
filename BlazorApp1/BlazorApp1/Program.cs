@@ -2,8 +2,9 @@ using BlazorApp1.Client.Pages;
 using BlazorApp1.Components;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp1.Data;
-using BlazorApp1.Client.Models;
 using Microsoft.AspNetCore.Components.Authorization;
+using BlazorApp1.Shared.Models;
+using BlazorApp1.Client.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,19 +18,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, BlazorApp1.ServerAuthStateProvider>();
 
-var provider = builder.Configuration.GetValue("DatabaseProvider", "PostgreSQL");
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    if (provider == "SqlServer")
-    {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection"));
-    }
-    else
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection"));
-    }
-});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
 
 // Register HttpClient for server-side prerendering
 builder.Services.AddHttpClient();
@@ -59,13 +49,23 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(BlazorApp1.Client._Imports).Assembly);
 
 // Minimal API Endpoints
-var api = app.MapGroup("/api");
+var api = app.MapGroup("/api").DisableAntiforgery();
 
 api.MapGet("/roles", async (AppDbContext db) => await db.Roles.ToListAsync());
+api.MapPost("/roles", async (AppDbContext db, Rol rol) => { if (rol.RolId == 0) db.Roles.Add(rol); else db.Roles.Update(rol); await db.SaveChangesAsync(); return Results.Ok(rol); });
+
 api.MapGet("/usuarios", async (AppDbContext db) => await db.Usuarios.ToListAsync());
+api.MapPost("/usuarios", async (AppDbContext db, Usuario usuario) => { if (usuario.UsuarioId == 0) db.Usuarios.Add(usuario); else db.Usuarios.Update(usuario); await db.SaveChangesAsync(); return Results.Ok(usuario); });
+
 api.MapGet("/conjuntos", async (AppDbContext db) => await db.Conjuntos.ToListAsync());
+api.MapPost("/conjuntos", async (AppDbContext db, Conjunto conjunto) => { if (conjunto.ConjuntoId == 0) db.Conjuntos.Add(conjunto); else db.Conjuntos.Update(conjunto); await db.SaveChangesAsync(); return Results.Ok(conjunto); });
+
 api.MapGet("/torres", async (AppDbContext db) => await db.Torres.ToListAsync());
+api.MapPost("/torres", async (AppDbContext db, Torre t) => { if (t.TorreId == 0) db.Torres.Add(t); else db.Torres.Update(t); await db.SaveChangesAsync(); return Results.Ok(t); });
+
 api.MapGet("/apartamentos", async (AppDbContext db) => await db.Apartamentos.ToListAsync());
+api.MapPost("/apartamentos", async (AppDbContext db, Apartamento a) => { if (a.UnidadId == 0) db.Apartamentos.Add(a); else db.Apartamentos.Update(a); await db.SaveChangesAsync(); return Results.Ok(a); });
+
 api.MapGet("/bitacora", async (AppDbContext db) => await db.BitacorasVigilancia.ToListAsync());
 api.MapGet("/ingresos", async (AppDbContext db) => await db.Ingresos.ToListAsync());
 api.MapGet("/zonascomunes", async (AppDbContext db) => await db.ZonasComunes.ToListAsync());
@@ -74,18 +74,30 @@ api.MapGet("/mantenimientos", async (AppDbContext db) => await db.Mantenimientos
 api.MapGet("/parqueaderos", async (AppDbContext db) => await db.Parqueaderos.ToListAsync());
 api.MapGet("/visitantes", async (AppDbContext db) => await db.ParqueaderosVisitantes.ToListAsync());
 api.MapGet("/reservas", async (AppDbContext db) => await db.Reservas.ToListAsync());
+
 api.MapGet("/residentesunidades", async (AppDbContext db) => await db.ResidentesUnidades.ToListAsync());
+api.MapPost("/residentesunidades", async (AppDbContext db, ResidenteUnidad ru) => { if (ru.ResidenteUnidadId == 0) db.ResidentesUnidades.Add(ru); else db.ResidentesUnidades.Update(ru); await db.SaveChangesAsync(); return Results.Ok(ru); });
+
 
 // Login endpoint
-api.MapPost("/login", async (BlazorApp1.Client.Models.LoginRequest request, AppDbContext db) =>
+api.MapPost("/login", async (BlazorApp1.Shared.Models.LoginRequest request, AppDbContext db) =>
 {
-    var user = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == request.Email && u.Clave == request.Password && u.Activo);
+    var user = await db.Usuarios.FirstOrDefaultAsync(u =>
+        u.Email == request.Email &&
+        u.Clave == request.Password &&
+        u.Activo);
+
     if (user != null)
     {
-        // Simple token containing user info, in a real app use JWT
         var token = $"{user.UsuarioId}:{user.Email}:{user.RolId}:{user.Nombre}";
-        return Results.Ok(new { Token = token, Nombre = user.Nombre, RolId = user.RolId });
+        return Results.Ok(new
+        {
+            Token = token,
+            Nombre = user.Nombre,
+            RolId = user.RolId
+        });
     }
+
     return Results.Unauthorized();
 });
 app.Run();

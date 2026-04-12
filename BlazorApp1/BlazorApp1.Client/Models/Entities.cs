@@ -43,6 +43,7 @@ namespace BlazorApp1.Client.Models
 
         [Column("fechacreacion")]
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        public string Clave { get; set; } = string.Empty;
     }
 
     [Table("conjunto", Schema = "dbo")]
@@ -112,8 +113,8 @@ namespace BlazorApp1.Client.Models
         [Column("usuarioid")]
         public int UsuarioId { get; set; }
 
-        [Column("unidadid")]
-        public int UnidadId { get; set; }
+        [Column("torreid")]
+        public int TorreId { get; set; }
 
         [Column("espropietario")]
         public bool EsPropietario { get; set; }

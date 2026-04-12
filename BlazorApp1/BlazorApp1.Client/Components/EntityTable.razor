@@ -11,7 +11,7 @@
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
                 <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar..." @bind="SearchTerm" @bind:event="oninput" />
             </div>
-            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" @onclick="OnAddRow">
+            <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-2" @onclick="OnAddRow">
                 <i class="bi bi-plus-lg"></i> @ButtonText
             </button>
         </div>
@@ -38,8 +38,11 @@
                                 <td class="ps-4 text-muted small fw-medium">@(Items.IndexOf(item) + 1)</td>
                                 @RowTemplate(item)
                                 <td class="text-end pe-4">
-                                    <div class="dropdown">
-                                        <button class="btn btn-icon btn-light btn-sm" data-bs-toggle="dropdown">
+                                    <button type="button" class="btn btn-success btn-sm me-1" title="Guardar" @onclick="() => SaveItem(item)">
+                                        <i class="bi bi-save"></i> Guardar
+                                    </button>
+                                    <div class="dropdown d-inline-block">
+                                        <button type="button" class="btn btn-icon btn-light btn-sm" data-bs-toggle="dropdown">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 glass">
@@ -99,10 +102,19 @@
     [Parameter] public List<TItem> Items { get; set; } = new();
     [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = default!;
     [Parameter] public EventCallback OnAddRow { get; set; }
-    
+    [Parameter] public EventCallback<TItem> OnSaveRow { get; set; }
+
     private string SearchTerm { get; set; } = "";
 
     private IEnumerable<TItem> FilteredItems => string.IsNullOrWhiteSpace(SearchTerm) 
         ? Items 
-        : Items.Where(i => i.ToString().Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+        : Items.Where(i => i?.ToString()?.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) == true);
+
+    private async Task SaveItem(TItem item)
+    {
+        if (OnSaveRow.HasDelegate)
+        {
+            await OnSaveRow.InvokeAsync(item);
+        }
+    }
 }
