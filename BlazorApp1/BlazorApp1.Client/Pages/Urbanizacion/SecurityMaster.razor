@@ -91,18 +91,18 @@
         {
             <EntityTable TItem="Parqueadero"
                          Title="Espacios de Parqueo"
-                         Headers='new() { "Tipo", "Número", "Unidad" }'
+                         Headers='new() { "Tipo", "Número", "Torre" }'
                          Items="parqueaderoRows"
-                         OnAddRow='() => AddRow(parqueaderoRows)'>
+                         OnAddRow='() => AddRow(parqueaderoRows)' OnSaveRow='SaveParqueadero'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
                     <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
                     <td>
-                        <select class="form-select" @bind="row.UnidadId">
-                            <option value="0">Seleccionar Unidad...</option>
-                            @foreach (var a in allUnidades)
+                        <select class="form-select" @bind="row.TorreId">
+                            <option value="0">Seleccionar Torre...</option>
+                            @foreach (var t in allTorres)
                             {
-                                <option value="@a.UnidadId">@a.Numero (@a.Tipo)</option>
+                                <option value="@t.TorreId">@t.Nombre</option>
                             }
                         </select>
                     </td>
@@ -113,17 +113,26 @@
         {
             <EntityTable TItem="ParqueaderoVisitante"
                          Title="Parqueadero de Visitantes"
-                         Headers='new() { "Placa", "Ingreso", "Salida", "Referencia Ingreso" }'
+                         Headers='new() { "Parqueadero", "Placa", "Ingreso", "Salida", "Referencia Ingreso" }'
                          Items="visitanteRows"
-                         OnAddRow='() => AddRow(visitanteRows)'>
+                         OnAddRow='() => AddRow(visitanteRows)' OnSaveRow='SaveVisitante'>
                 <RowTemplate Context="row">
+                    <td>
+                        <select class="form-select" @bind="row.ParqueaderoId">
+                            <option value="0">Seleccionar Parqueadero...</option>
+                            @foreach (var p in parqueaderoRows.Where(p => p.ParqueaderoId != 0))
+                            {
+                                <option value="@p.ParqueaderoId">@p.Numero (@p.Tipo)</option>
+                            }
+                        </select>
+                    </td>
                     <td><input type="text" class="form-control" @bind="row.Placa" placeholder="Placa" /></td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraIngreso" /></td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraSalida" /></td>
                     <td>
                         <select class="form-select" @bind="row.IngresoId">
                             <option value="0">Seleccionar Registro Ingreso...</option>
-                            @foreach (var i in ingresoRows)
+                            @foreach (var i in ingresoRows.Where(i => i.IngresoId != 0))
                             {
                                 <option value="@i.IngresoId">@i.NombrePersona (@i.Documento)</option>
                             }
@@ -242,6 +251,54 @@
                 var errorMsg = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error al guardar bitácora: {errorMsg}");
                 await JS.InvokeVoidAsync("alert", $"Error al guardar bitácora. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveParqueadero(Parqueadero parqueadero)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/parqueaderos", parqueadero);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Parqueadero>();
+                if (saved != null) parqueadero.ParqueaderoId = saved.ParqueaderoId;
+                await JS.InvokeVoidAsync("alert", "Parqueadero guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Parqueadero: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Parqueadero. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveVisitante(ParqueaderoVisitante visitante)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/visitantes", visitante);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<ParqueaderoVisitante>();
+                if (saved != null) visitante.ParqueaderoVisitanteId = saved.ParqueaderoVisitanteId;
+                await JS.InvokeVoidAsync("alert", "Registro de visitante guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar visitante: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar visitante. HTTP {response.StatusCode}:\n{errorMsg}");
             }
         }
         catch(Exception e)

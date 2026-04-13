@@ -233,8 +233,8 @@ namespace BlazorApp1.Client.Models
         [Column("numero")]
         public string Numero { get; set; } = string.Empty;
 
-        [Column("unidadid")]
-        public int UnidadId { get; set; }
+        [Column("torreid")]
+        public int TorreId { get; set; }
     }
 
     [Table("parqueaderovisitante", Schema = "dbo")]

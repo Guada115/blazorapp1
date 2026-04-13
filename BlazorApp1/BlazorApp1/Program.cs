@@ -73,11 +73,21 @@ api.MapPost("/bitacora", async (AppDbContext db, BitacoraVigilancia b) => { if (
 api.MapGet("/ingresos", async (AppDbContext db) => await db.Ingresos.ToListAsync());
 api.MapPost("/ingresos", async (AppDbContext db, Ingreso i) => { if (i.IngresoId == 0) db.Ingresos.Add(i); else db.Ingresos.Update(i); await db.SaveChangesAsync(); return Results.Ok(i); });
 api.MapGet("/zonascomunes", async (AppDbContext db) => await db.ZonasComunes.ToListAsync());
+api.MapPost("/zonascomunes", async (AppDbContext db, ZonaComun z) => { if (z.ZonaComunId == 0) db.ZonasComunes.Add(z); else db.ZonasComunes.Update(z); await db.SaveChangesAsync(); return Results.Ok(z); });
+
 api.MapGet("/tiposmantenimiento", async (AppDbContext db) => await db.TiposMantenimiento.ToListAsync());
+api.MapPost("/tiposmantenimiento", async (AppDbContext db, TipoMantenimiento t) => { if (t.TipoMantenimientoId == 0) db.TiposMantenimiento.Add(t); else db.TiposMantenimiento.Update(t); await db.SaveChangesAsync(); return Results.Ok(t); });
+
 api.MapGet("/mantenimientos", async (AppDbContext db) => await db.Mantenimientos.ToListAsync());
+api.MapPost("/mantenimientos", async (AppDbContext db, Mantenimiento m) => { if (m.MantenimientoId == 0) db.Mantenimientos.Add(m); else db.Mantenimientos.Update(m); await db.SaveChangesAsync(); return Results.Ok(m); });
 api.MapGet("/parqueaderos", async (AppDbContext db) => await db.Parqueaderos.ToListAsync());
+api.MapPost("/parqueaderos", async (AppDbContext db, Parqueadero p) => { if (p.ParqueaderoId == 0) db.Parqueaderos.Add(p); else db.Parqueaderos.Update(p); await db.SaveChangesAsync(); return Results.Ok(p); });
+
 api.MapGet("/visitantes", async (AppDbContext db) => await db.ParqueaderosVisitantes.ToListAsync());
+api.MapPost("/visitantes", async (AppDbContext db, ParqueaderoVisitante pv) => { if (pv.ParqueaderoVisitanteId == 0) db.ParqueaderosVisitantes.Add(pv); else db.ParqueaderosVisitantes.Update(pv); await db.SaveChangesAsync(); return Results.Ok(pv); });
+
 api.MapGet("/reservas", async (AppDbContext db) => await db.Reservas.ToListAsync());
+api.MapPost("/reservas", async (AppDbContext db, Reserva r) => { if (r.ReservaId == 0) db.Reservas.Add(r); else db.Reservas.Update(r); await db.SaveChangesAsync(); return Results.Ok(r); });
 
 api.MapGet("/residentesunidades", async (AppDbContext db) => await db.ResidentesUnidades.ToListAsync());
 api.MapPost("/residentesunidades", async (AppDbContext db, ResidenteUnidad ru) => { if (ru.ResidenteUnidadId == 0) db.ResidentesUnidades.Add(ru); else db.ResidentesUnidades.Update(ru); await db.SaveChangesAsync(); return Results.Ok(ru); });

@@ -2,6 +2,7 @@
 @rendermode InteractiveWebAssembly
 @attribute [Authorize(Roles = "2,3")]
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <PageTitle>Operaciones - Apex Housing</PageTitle>
 
@@ -45,7 +46,7 @@
                          Title="Listado de Reservas"
                          Headers='new() { "Zona Común", "Usuario", "Fecha", "Inicio", "Fin", "Estado" }'
                          Items="reservaRows"
-                         OnAddRow='() => AddRow(reservaRows)'>
+                         OnAddRow='() => AddRow(reservaRows)' OnSaveRow='SaveReserva'>
                 <RowTemplate Context="row">
                     <td>
                         <select class="form-select" @bind="row.ZonaComunId">
@@ -78,7 +79,7 @@
                          Title="Listado de Zonas Comunes"
                          Headers='new() { "Nombre", "Pago Requerido", "Valor Hora" }'
                          Items="zonaRows"
-                         OnAddRow='() => AddRow(zonaRows)'>
+                         OnAddRow='() => AddRow(zonaRows)' OnSaveRow='SaveZonaComun'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                     <td>
@@ -96,7 +97,7 @@
                          Title="Registro de Mantenimientos"
                          Headers='new() { "Tipo", "Fecha", "Proveedor", "Descripción", "Costo", "Zona" }'
                          Items="mantenimientoRows"
-                         OnAddRow='() => AddRow(mantenimientoRows)'>
+                         OnAddRow='() => AddRow(mantenimientoRows)' OnSaveRow='SaveMantenimiento'>
                 <RowTemplate Context="row">
                     <td>
                         <select class="form-select" @bind="row.TipoMantenimientoId">
@@ -129,9 +130,9 @@
                          Title="Tipos de Mantenimiento"
                          Headers='new() { "ID", "Nombre" }'
                          Items="tipoRows"
-                         OnAddRow='() => AddRow(tipoRows)'>
+                         OnAddRow='() => AddRow(tipoRows)' OnSaveRow='SaveTipoMantenimiento'>
                 <RowTemplate Context="row">
-                    <td><input type="number" class="form-control" @bind="row.TipoMantenimientoId" placeholder="ID" /></td>
+                    <td><input type="number" class="form-control" value="@row.TipoMantenimientoId" placeholder="Auto" disabled /></td>
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                 </RowTemplate>
             </EntityTable>
@@ -172,8 +173,9 @@
             tipoRows = await Http.GetFromJsonAsync<List<TipoMantenimiento>>("api/tiposmantenimiento") ?? new();
             reservaRows = await Http.GetFromJsonAsync<List<Reserva>>("api/reservas") ?? new();
             mantenimientoRows = await Http.GetFromJsonAsync<List<Mantenimiento>>("api/mantenimientos") ?? new();
-            allUsuarios = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new();
-            
+            var usus = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new();
+            allUsuarios = usus.Where(u => u.RolId == 2).ToList();
+
             if (zonaRows.Count == 0) zonaRows.Add(new ZonaComun());
             if (tipoRows.Count == 0) tipoRows.Add(new TipoMantenimiento());
             if (reservaRows.Count == 0) reservaRows.Add(new Reserva());
@@ -194,5 +196,101 @@
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private async Task SaveReserva(Reserva reserva)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/reservas", reserva);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Reserva>();
+                if (saved != null) reserva.ReservaId = saved.ReservaId;
+                await JS.InvokeVoidAsync("alert", "Reserva guardada correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Reserva: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Reserva. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveZonaComun(ZonaComun zona)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/zonascomunes", zona);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<ZonaComun>();
+                if (saved != null) zona.ZonaComunId = saved.ZonaComunId;
+                await JS.InvokeVoidAsync("alert", "Zona Común guardada correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Zona Común: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Zona Común. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveMantenimiento(Mantenimiento mantenimiento)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/mantenimientos", mantenimiento);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Mantenimiento>();
+                if (saved != null) mantenimiento.MantenimientoId = saved.MantenimientoId;
+                await JS.InvokeVoidAsync("alert", "Mantenimiento guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Mantenimiento: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Mantenimiento. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveTipoMantenimiento(TipoMantenimiento tipo)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/tiposmantenimiento", tipo);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<TipoMantenimiento>();
+                if (saved != null) tipo.TipoMantenimientoId = saved.TipoMantenimientoId;
+                await JS.InvokeVoidAsync("alert", "Tipo de Mantenimiento guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Tipo de Mantenimiento: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Tipo de Mantenimiento. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
     }
 }
