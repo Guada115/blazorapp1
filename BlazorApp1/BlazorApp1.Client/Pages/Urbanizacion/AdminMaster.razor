@@ -15,7 +15,7 @@
     </div>
 
     <!-- Tab Navigation -->
-    <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm d-inline-flex border">
+    <ul class="nav nav-pills mb-4 p-2 rounded-3 shadow-sm d-inline-flex border" style="background-color: var(--card-bg); border-color: rgba(255,255,255,0.05) !important;">
         <li class="nav-item">
             <button class="nav-link @(activeTab == "conjunto" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("conjunto")'>
                 <i class="bi bi-houses me-2"></i> Conjunto

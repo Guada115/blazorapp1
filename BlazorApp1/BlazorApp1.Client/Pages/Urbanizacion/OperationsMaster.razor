@@ -1,8 +1,9 @@
 @page "/urbanizacion/operaciones"
 @rendermode InteractiveWebAssembly
-@attribute [Authorize(Roles = "2,3")]
+@attribute [Authorize(Roles = "1,2,3")]
 @inject HttpClient Http
 @inject IJSRuntime JS
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Operaciones - Apex Housing</PageTitle>
 
@@ -15,7 +16,7 @@
     </div>
 
     <!-- Tab Navigation -->
-    <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm d-inline-flex border overflow-auto flex-nowrap w-100">
+    <ul class="nav nav-pills mb-4 p-2 rounded-3 shadow-sm d-inline-flex border overflow-auto flex-nowrap w-100" style="background-color: var(--card-bg); border-color: rgba(255,255,255,0.05) !important;">
         <li class="nav-item">
             <button class="nav-link @(activeTab == "reservas" ? "active" : "") fw-semibold px-4 text-nowrap" @onclick='() => SetTab("reservas")'>
                 <i class="bi bi-calendar-check me-2"></i> Reservas
@@ -58,18 +59,33 @@
                         </select>
                     </td>
                     <td>
-                        <select class="form-select" @bind="row.UsuarioId">
-                            <option value="0">Seleccionar Usuario...</option>
-                            @foreach (var u in allUsuarios)
+                        <select class="form-select" @bind="row.UsuarioId" disabled="@isResidente">
+                            @if (isResidente)
                             {
-                                <option value="@u.UsuarioId">@u.Nombre</option>
+                                var me = allUsuarios.FirstOrDefault(u => u.UsuarioId == currentUserId);
+                                if (me != null)
+                                {
+                                    <option value="@me.UsuarioId">@me.Nombre</option>
+                                }
+                                else
+                                {
+                                    <option value="@currentUserId">Mi Usuario</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="0">Seleccionar Usuario...</option>
+                                @foreach (var u in allUsuarios)
+                                {
+                                    <option value="@u.UsuarioId">@u.Nombre</option>
+                                }
                             }
                         </select>
                     </td>
                     <td><input type="date" class="form-control" @bind="row.Fecha" /></td>
                     <td><input type="time" class="form-control" @bind="row.HoraInicio" /></td>
                     <td><input type="time" class="form-control" @bind="row.HoraFin" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Estado" placeholder="Estado" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Estado" placeholder="Estado" disabled="@isResidente" /></td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -78,16 +94,16 @@
             <EntityTable TItem="ZonaComun"
                          Title="Listado de Zonas Comunes"
                          Headers='new() { "Nombre", "Pago Requerido", "Valor Hora" }'
-                         Items="zonaRows"
+                         Items="zonaRows" ReadOnly="isResidente"
                          OnAddRow='() => AddRow(zonaRows)' OnSaveRow='SaveZonaComun'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" disabled="@isResidente" /></td>
                     <td>
                         <div class="form-check form-switch mt-1">
-                            <input class="form-check-input" type="checkbox" @bind="row.RequierePago" />
+                            <input class="form-check-input" type="checkbox" @bind="row.RequierePago" disabled="@isResidente" />
                         </div>
                     </td>
-                    <td><input type="number" class="form-control" @bind="row.ValorHora" placeholder="Valor Hora" /></td>
+                    <td><input type="number" class="form-control" @bind="row.ValorHora" placeholder="Valor Hora" disabled="@isResidente" /></td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -96,11 +112,11 @@
             <EntityTable TItem="Mantenimiento"
                          Title="Registro de Mantenimientos"
                          Headers='new() { "Tipo", "Fecha", "Proveedor", "Descripción", "Costo", "Zona" }'
-                         Items="mantenimientoRows"
+                         Items="mantenimientoRows" ReadOnly="isResidente"
                          OnAddRow='() => AddRow(mantenimientoRows)' OnSaveRow='SaveMantenimiento'>
                 <RowTemplate Context="row">
                     <td>
-                        <select class="form-select" @bind="row.TipoMantenimientoId">
+                        <select class="form-select" @bind="row.TipoMantenimientoId" disabled="@isResidente">
                             <option value="0">Seleccionar Tipo...</option>
                             @foreach (var t in tipoRows)
                             {
@@ -108,12 +124,12 @@
                             }
                         </select>
                     </td>
-                    <td><input type="date" class="form-control" @bind="row.Fecha" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Provider" placeholder="Proveedor" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Descripcion" placeholder="Descripción" /></td>
-                    <td><input type="number" class="form-control" @bind="row.Costo" placeholder="Costo" /></td>
+                    <td><input type="date" class="form-control" @bind="row.Fecha" disabled="@isResidente" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Provider" placeholder="Proveedor" disabled="@isResidente" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Descripcion" placeholder="Descripción" disabled="@isResidente" /></td>
+                    <td><input type="number" class="form-control" @bind="row.Costo" placeholder="Costo" disabled="@isResidente" /></td>
                     <td>
-                        <select class="form-select" @bind="row.ZonaComunId">
+                        <select class="form-select" @bind="row.ZonaComunId" disabled="@isResidente">
                             <option value="0">Seleccionar Zona...</option>
                             @foreach (var z in zonaRows)
                             {
@@ -129,11 +145,11 @@
             <EntityTable TItem="TipoMantenimiento"
                          Title="Tipos de Mantenimiento"
                          Headers='new() { "ID", "Nombre" }'
-                         Items="tipoRows"
+                         Items="tipoRows" ReadOnly="isResidente"
                          OnAddRow='() => AddRow(tipoRows)' OnSaveRow='SaveTipoMantenimiento'>
                 <RowTemplate Context="row">
                     <td><input type="number" class="form-control" value="@row.TipoMantenimientoId" placeholder="Auto" disabled /></td>
-                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" disabled="@isResidente" /></td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -158,7 +174,9 @@
 
 @code {
     private string activeTab = "reservas";
-    
+    private bool isResidente = false;
+    private int currentUserId = 0;
+
     private List<Reserva> reservaRows = new();
     private List<ZonaComun> zonaRows = new();
     private List<Mantenimiento> mantenimientoRows = new();
@@ -167,6 +185,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var roleClaim = user.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (roleClaim == "2") isResidente = true;
+
+            var idClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(idClaim, out int uid)) currentUserId = uid;
+        }
+
         try
         {
             zonaRows = await Http.GetFromJsonAsync<List<ZonaComun>>("api/zonascomunes") ?? new();
@@ -178,16 +207,16 @@
 
             if (zonaRows.Count == 0) zonaRows.Add(new ZonaComun());
             if (tipoRows.Count == 0) tipoRows.Add(new TipoMantenimiento());
-            if (reservaRows.Count == 0) reservaRows.Add(new Reserva());
-            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento());
+            if (reservaRows.Count == 0) reservaRows.Add(new Reserva { UsuarioId = isResidente ? currentUserId : 0, Fecha = DateOnly.FromDateTime(DateTime.Now) });
+            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento { Fecha = DateOnly.FromDateTime(DateTime.Now) });
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error al cargar datos: {ex.Message}");
             if (zonaRows.Count == 0) zonaRows.Add(new ZonaComun());
             if (tipoRows.Count == 0) tipoRows.Add(new TipoMantenimiento());
-            if (reservaRows.Count == 0) reservaRows.Add(new Reserva());
-            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento());
+            if (reservaRows.Count == 0) reservaRows.Add(new Reserva { UsuarioId = isResidente ? currentUserId : 0, Fecha = DateOnly.FromDateTime(DateTime.Now) });
+            if (mantenimientoRows.Count == 0) mantenimientoRows.Add(new Mantenimiento { Fecha = DateOnly.FromDateTime(DateTime.Now) });
         }
     }
 
@@ -195,7 +224,12 @@
 
     private void AddRow<T>(List<T> target) where T : new()
     {
-        target.Add(new T());
+        var newItem = new T();
+        if (newItem is Reserva r && isResidente)
+        {
+            r.UsuarioId = currentUserId;
+        }
+        target.Add(newItem);
     }
 
     private async Task SaveReserva(Reserva reserva)
