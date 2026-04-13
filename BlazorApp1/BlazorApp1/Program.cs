@@ -68,7 +68,10 @@ api.MapGet("/apartamentos", async (AppDbContext db) => await db.Apartamentos.ToL
 api.MapPost("/apartamentos", async (AppDbContext db, Apartamento a) => { if (a.UnidadId == 0) db.Apartamentos.Add(a); else db.Apartamentos.Update(a); await db.SaveChangesAsync(); return Results.Ok(a); });
 
 api.MapGet("/bitacora", async (AppDbContext db) => await db.BitacorasVigilancia.ToListAsync());
+api.MapPost("/bitacora", async (AppDbContext db, BitacoraVigilancia b) => { if (b.BitacoraId == 0) db.BitacorasVigilancia.Add(b); else db.BitacorasVigilancia.Update(b); await db.SaveChangesAsync(); return Results.Ok(b); });
+
 api.MapGet("/ingresos", async (AppDbContext db) => await db.Ingresos.ToListAsync());
+api.MapPost("/ingresos", async (AppDbContext db, Ingreso i) => { if (i.IngresoId == 0) db.Ingresos.Add(i); else db.Ingresos.Update(i); await db.SaveChangesAsync(); return Results.Ok(i); });
 api.MapGet("/zonascomunes", async (AppDbContext db) => await db.ZonasComunes.ToListAsync());
 api.MapGet("/tiposmantenimiento", async (AppDbContext db) => await db.TiposMantenimiento.ToListAsync());
 api.MapGet("/mantenimientos", async (AppDbContext db) => await db.Mantenimientos.ToListAsync());

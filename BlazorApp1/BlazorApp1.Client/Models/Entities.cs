@@ -162,8 +162,8 @@ namespace BlazorApp1.Client.Models
         [Column("usuarioid")]
         public int? UsuarioId { get; set; }
 
-        [Column("unidadid")]
-        public int UnidadId { get; set; }
+        [Column("torreid")]
+        public int TorreId { get; set; }
     }
 
     [Table("zonacomun", Schema = "dbo")]

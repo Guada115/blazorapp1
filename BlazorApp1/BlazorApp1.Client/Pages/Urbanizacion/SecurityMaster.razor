@@ -2,6 +2,7 @@
 @rendermode InteractiveWebAssembly
 @attribute [Authorize(Roles = "1,3")]
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <PageTitle>Seguridad & Acceso - Apex Housing</PageTitle>
 
@@ -43,9 +44,9 @@
         {
             <EntityTable TItem="Ingreso"
                          Title="Registro de Ingresos"
-                         Headers='new() { "Tipo", "Nombre Persona", "Documento", "Ingreso", "Salida", "Unidad" }'
+                         Headers='new() { "Tipo", "Nombre Persona", "Documento", "Ingreso", "Salida", "Torre" }'
                          Items="ingresoRows"
-                         OnAddRow='() => AddRow(ingresoRows)'>
+                         OnAddRow='() => AddRow(ingresoRows)' OnSaveRow='SaveIngreso'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
                     <td><input type="text" class="form-control" @bind="row.NombrePersona" placeholder="Nombre Persona" /></td>
@@ -53,11 +54,11 @@
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraIngreso" /></td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraSalida" /></td>
                     <td>
-                        <select class="form-select" @bind="row.UnidadId">
-                            <option value="0">Seleccionar Unidad...</option>
-                            @foreach (var a in allUnidades)
+                        <select class="form-select" @bind="row.TorreId">
+                            <option value="0">Seleccionar Torre...</option>
+                            @foreach (var t in allTorres)
                             {
-                                <option value="@a.UnidadId">@a.Numero (@a.Tipo)</option>
+                                <option value="@t.TorreId">@t.Nombre</option>
                             }
                         </select>
                     </td>
@@ -70,7 +71,7 @@
                          Title="Registros de Vigilancia (Bitácora)"
                          Headers='new() { "Vigilante", "Fecha Hora", "Observación" }'
                          Items="bitacoraRows"
-                         OnAddRow='() => AddRow(bitacoraRows)'>
+                         OnAddRow='() => AddRow(bitacoraRows)' OnSaveRow='SaveBitacora'>
                 <RowTemplate Context="row">
                     <td>
                         <select class="form-select" @bind="row.VigilanteId">
@@ -160,6 +161,7 @@
     
     private List<Apartamento> allUnidades = new();
     private List<Usuario> allVigilantes = new();
+    private List<Torre> allTorres = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -169,22 +171,27 @@
             bitacoraRows = await Http.GetFromJsonAsync<List<BitacoraVigilancia>>("api/bitacora") ?? new();
             parqueaderoRows = await Http.GetFromJsonAsync<List<Parqueadero>>("api/parqueaderos") ?? new();
             visitanteRows = await Http.GetFromJsonAsync<List<ParqueaderoVisitante>>("api/visitantes") ?? new();
-            
+
             allUnidades = await Http.GetFromJsonAsync<List<Apartamento>>("api/apartamentos") ?? new();
-            allVigilantes = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new(); 
-            
-            if (ingresoRows.Count == 0) ingresoRows.Add(new Ingreso());
-            if (bitacoraRows.Count == 0) bitacoraRows.Add(new BitacoraVigilancia());
+
+            // FIltrar vigilantes
+            var usus = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new(); 
+            allVigilantes = usus.Where(u => u.RolId == 1).ToList();
+
+            allTorres = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new();
+
+            if (ingresoRows.Count == 0) ingresoRows.Add(new Ingreso { FechaHoraIngreso = DateTime.Now });
+            if (bitacoraRows.Count == 0) bitacoraRows.Add(new BitacoraVigilancia { FechaHora = DateTime.Now });
             if (parqueaderoRows.Count == 0) parqueaderoRows.Add(new Parqueadero());
-            if (visitanteRows.Count == 0) visitanteRows.Add(new ParqueaderoVisitante());
+            if (visitanteRows.Count == 0) visitanteRows.Add(new ParqueaderoVisitante { FechaHoraIngreso = DateTime.Now });
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error al cargar datos: {ex.Message}");
-            if (ingresoRows.Count == 0) ingresoRows.Add(new Ingreso());
-            if (bitacoraRows.Count == 0) bitacoraRows.Add(new BitacoraVigilancia());
+            if (ingresoRows.Count == 0) ingresoRows.Add(new Ingreso { FechaHoraIngreso = DateTime.Now });
+            if (bitacoraRows.Count == 0) bitacoraRows.Add(new BitacoraVigilancia { FechaHora = DateTime.Now });
             if (parqueaderoRows.Count == 0) parqueaderoRows.Add(new Parqueadero());
-            if (visitanteRows.Count == 0) visitanteRows.Add(new ParqueaderoVisitante());
+            if (visitanteRows.Count == 0) visitanteRows.Add(new ParqueaderoVisitante { FechaHoraIngreso = DateTime.Now });
         }
     }
 
@@ -193,5 +200,53 @@
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private async Task SaveIngreso(Ingreso ingreso)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/ingresos", ingreso);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<Ingreso>();
+                if (saved != null) ingreso.IngresoId = saved.IngresoId;
+                await JS.InvokeVoidAsync("alert", "Ingreso guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar Ingreso: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar Ingreso. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
+    }
+
+    private async Task SaveBitacora(BitacoraVigilancia bitacora)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/bitacora", bitacora);
+            if (response.IsSuccessStatusCode)
+            {
+                var saved = await response.Content.ReadFromJsonAsync<BitacoraVigilancia>();
+                if (saved != null) bitacora.BitacoraId = saved.BitacoraId;
+                await JS.InvokeVoidAsync("alert", "Registro de bitácora guardado correctamente!");
+            }
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error al guardar bitácora: {errorMsg}");
+                await JS.InvokeVoidAsync("alert", $"Error al guardar bitácora. HTTP {response.StatusCode}:\n{errorMsg}");
+            }
+        }
+        catch(Exception e)
+        {
+            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
+        }
     }
 }
