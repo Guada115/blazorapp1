@@ -41,6 +41,7 @@
                          Title="Listado de Torres"
                          Headers='new() { "Conjunto", "Nombre Torre" }'
                          Items="torreRows"
+                         ShowReportButton="true" ReportEntity="torres"
                          OnAddRow='() => AddRow(torreRows)' OnSaveRow='SaveTorre'>
                 <RowTemplate Context="row">
                     <td>
@@ -59,9 +60,10 @@
         else if (activeTab == "apartamentos")
         {
             <EntityTable TItem="Apartamento"
-                         Title="Listado de Apartamentos"
-                         Headers='new() { "Número", "Torre", "Tipo", "Área" }'
+                         Title="Registro de Apartamentos"
+                         Headers='new() { "Torre", "Número", "Tipo", "Área (m²)" }'
                          Items="apartamentoRows"
+                         ShowReportButton="true" ReportEntity="apartamentos"
                          OnAddRow='() => AddRow(apartamentoRows)' OnSaveRow='SaveApartamento'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
@@ -85,6 +87,7 @@
                          Title="Listado de Residentes"
                          Headers='new() { "Usuario", "Torre", "Es Propietario" }'
                          Items="residenteRows"
+                         ShowReportButton="true" ReportEntity="residentes"
                          OnAddRow='() => AddRow(residenteRows)' OnSaveRow='SaveResidente'>
                 <RowTemplate Context="row">
                     <td>

@@ -41,6 +41,7 @@
                          Title="Datos del Conjunto"
                          Headers='new() { "Nombre", "DirecciÃ³n", "Ciudad", "NIT", "TelÃ©fono" }'
                          Items="conjuntoRows"
+                         ShowReportButton="true" ReportEntity="conjuntos"
                          OnAddRow='() => AddRow(conjuntoRows)' OnSaveRow='SaveConjunto'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
@@ -57,6 +58,7 @@
                          Title="Listado de Usuarios"
                          Headers='new() { "Nombre", "Email", "Teléfono", "Rol", "Es Propietario", "Apartamento", "Torre" }'
                          Items="usuariosRows"
+                         ShowReportButton="true" ReportEntity="usuarios"
                          OnAddRow='() => AddRow(usuariosRows)' OnSaveRow='SaveUsuario'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
@@ -103,6 +105,7 @@
                          Title="Listado de Roles"
                          Headers='new() { "Rol Id", "Nombre" }'
                          Items="rolesRows"
+                         ShowReportButton="true" ReportEntity="roles"
                          OnAddRow='() => AddRow(rolesRows)' OnSaveRow='SaveRol'>
                 <RowTemplate Context="row">
                     <td><input type="number" class="form-control" @bind="row.RolId" placeholder="Rol Id" /></td>

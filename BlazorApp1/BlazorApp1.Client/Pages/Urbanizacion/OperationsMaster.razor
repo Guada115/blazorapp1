@@ -47,6 +47,7 @@
                          Title="Listado de Reservas"
                          Headers='new() { "Zona Común", "Usuario", "Fecha", "Inicio", "Fin", "Estado", "Total Cobrar" }'
                          Items="reservaRows"
+                         ShowReportButton="true" ReportEntity="reservas" RequiresDateRange="true"
                          OnAddRow='() => AddRow(reservaRows)' OnSaveRow='SaveReserva'>
                 <RowTemplate Context="row">
                     <td>
@@ -84,12 +85,13 @@
         else if (activeTab == "zonas")
         {
             <EntityTable TItem="ZonaComun"
-                         Title="Listado de Zonas Comunes"
-                         Headers='new() { "Nombre", "Pago Requerido", "Valor Hora" }'
-                         Items="zonaRows" ReadOnly="isResidente"
+                         Title="Zonas Comunes"
+                         Headers='new() { "Nombre", "Requiere Pago", "Valor Hora" }'
+                         Items="zonaRows"
+                         ShowReportButton="true" ReportEntity="zonascomunes"
                          OnAddRow='() => AddRow(zonaRows)' OnSaveRow='SaveZonaComun'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" disabled="@isResidente" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                     <td>
                         <div class="form-check form-switch mt-1">
                             <input class="form-check-input" type="checkbox" @bind="row.RequierePago" disabled="@isResidente" />
@@ -108,9 +110,10 @@
         else if (activeTab == "mantenimiento")
         {
             <EntityTable TItem="Mantenimiento"
-                         Title="Registro de Mantenimientos"
+                         Title="Mantenimientos Programados"
                          Headers='new() { "Tipo", "Fecha", "Proveedor", "Descripción", "Costo", "Zona" }'
-                         Items="mantenimientoRows" ReadOnly="isResidente"
+                         Items="mantenimientoRows"
+                         ShowReportButton="true" ReportEntity="mantenimientos" RequiresDateRange="true"
                          OnAddRow='() => AddRow(mantenimientoRows)' OnSaveRow='SaveMantenimiento'>
                 <RowTemplate Context="row">
                     <td>
@@ -142,12 +145,12 @@
         {
             <EntityTable TItem="TipoMantenimiento"
                          Title="Tipos de Mantenimiento"
-                         Headers='new() { "ID", "Nombre" }'
-                         Items="tipoRows" ReadOnly="isResidente"
+                         Headers='new() { "Nombre" }'
+                         Items="tipoRows"
+                         ShowReportButton="true" ReportEntity="tiposmantenimiento"
                          OnAddRow='() => AddRow(tipoRows)' OnSaveRow='SaveTipoMantenimiento'>
                 <RowTemplate Context="row">
-                    <td><input type="number" class="form-control" value="@row.TipoMantenimientoId" placeholder="Auto" disabled /></td>
-                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" disabled="@isResidente" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
                 </RowTemplate>
             </EntityTable>
         }

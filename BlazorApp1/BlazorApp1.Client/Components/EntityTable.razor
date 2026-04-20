@@ -11,6 +11,19 @@
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
                 <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar..." @bind="SearchTerm" @bind:event="oninput" />
             </div>
+            @if (ShowReportButton && isAdmin)
+            {
+                <div class="d-flex gap-2 align-items-center me-2">
+                    @if (RequiresDateRange)
+                    {
+                        <input type="date" class="form-control form-control-sm" @bind="ReportStartDate" title="Fecha Inicio" />
+                        <input type="date" class="form-control form-control-sm" @bind="ReportEndDate" title="Fecha Fin" />
+                    }
+                    <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" @onclick="GenerateReportAsync">
+                        <i class="bi bi-file-earmark-excel"></i> Excel
+                    </button>
+                </div>
+            }
             @if (!ReadOnly)
             {
                 <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-2" @onclick="OnAddRow">
@@ -113,8 +126,30 @@
     [Parameter] public EventCallback OnAddRow { get; set; }
     [Parameter] public EventCallback<TItem> OnSaveRow { get; set; }
     [Parameter] public bool ReadOnly { get; set; } = false;
+    
+    [Parameter] public bool ShowReportButton { get; set; } = false;
+    [Parameter] public bool RequiresDateRange { get; set; } = false;
+    [Parameter] public string ReportEntity { get; set; } = "";
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+
+    private bool isAdmin = false;
+    private DateTime? ReportStartDate { get; set; }
+    private DateTime? ReportEndDate { get; set; }
 
     private string SearchTerm { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var roleClaim = user.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (roleClaim == "3") isAdmin = true;
+        }
+    }
 
     private IEnumerable<TItem> FilteredItems => string.IsNullOrWhiteSpace(SearchTerm) 
         ? Items 
@@ -126,5 +161,26 @@
         {
             await OnSaveRow.InvokeAsync(item);
         }
+    }
+
+    private async Task GenerateReportAsync()
+    {
+        if (string.IsNullOrEmpty(ReportEntity)) return;
+
+        var url = $"/api/export/{ReportEntity}";
+        var queryParams = new List<string>();
+
+        if (RequiresDateRange)
+        {
+            if (ReportStartDate.HasValue) queryParams.Add($"inicio={ReportStartDate.Value:yyyy-MM-dd}");
+            if (ReportEndDate.HasValue) queryParams.Add($"fin={ReportEndDate.Value:yyyy-MM-dd}");
+        }
+
+        if (queryParams.Any())
+        {
+            url += "?" + string.Join("&", queryParams);
+        }
+
+        await JSRuntime.InvokeVoidAsync("window.open", url, "_blank");
     }
 }
