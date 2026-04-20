@@ -27,8 +27,9 @@ namespace BlazorApp1.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
-            // Seed defaults or additional configurations if needed
+
+            // EF Core 7+ trigger configuration
+            modelBuilder.Entity<Reserva>().ToTable(tb => tb.HasTrigger("trg_reserva_calcular_total"));
         }
     }
 }

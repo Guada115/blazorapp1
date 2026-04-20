@@ -98,8 +98,7 @@ api.MapPost("/login", async (BlazorApp1.Shared.Models.LoginRequest request, AppD
 {
     var user = await db.Usuarios.FirstOrDefaultAsync(u =>
         u.Email == request.Email &&
-        u.Clave == request.Password &&
-        u.Activo);
+        u.Clave == request.Password);
 
     if (user != null)
     {

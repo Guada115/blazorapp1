@@ -55,25 +55,42 @@
         {
             <EntityTable TItem="Usuario"
                          Title="Listado de Usuarios"
-                         Headers='new() { "Nombre", "Documento", "Email", "TelÃ©fono", "Activo", "Rol" }'
+                         Headers='new() { "Nombre", "Email", "Teléfono", "Rol", "Es Propietario", "Apartamento", "Torre" }'
                          Items="usuariosRows"
                          OnAddRow='() => AddRow(usuariosRows)' OnSaveRow='SaveUsuario'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Nombre" placeholder="Nombre" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Documento" placeholder="Documento" /></td>
                     <td><input type="text" class="form-control" @bind="row.Email" placeholder="Email" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="TelÃ©fono" /></td>
-                    <td>
-                        <div class="form-check form-switch mt-1">
-                            <input class="form-check-input" type="checkbox" @bind="row.Activo" />
-                        </div>
-                    </td>
+                    <td><input type="text" class="form-control" @bind="row.Telefono" placeholder="Teléfono" /></td>
                     <td>
                         <select class="form-select" @bind="row.RolId">
                             <option value="0">Seleccionar Rol...</option>
                             @foreach (var rol in allRoles)
                             {
                                 <option value="@rol.RolId">@rol.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" @bind="row.EsPropietario" />
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-select" value="@row.ApartamentoId" @onchange="@(e => OnApartamentoChanged(row, e.Value?.ToString()))">
+                            <option value="">Ninguno</option>
+                            @foreach (var a in allApartamentos)
+                            {
+                                <option value="@((int)a.UnidadId)">@a.Numero - @a.Tipo</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.TorreId" disabled>
+                            <option value="">N/A</option>
+                            @foreach (var t in allTorres)
+                            {
+                                <option value="@t.TorreId">@t.Nombre</option>
                             }
                         </select>
                     </td>
@@ -119,6 +136,8 @@
     private List<Usuario> usuariosRows = new();
     private List<Rol> rolesRows = new();
     private List<Rol> allRoles = new();
+    private List<Apartamento> allApartamentos = new();
+    private List<Torre> allTorres = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -127,8 +146,10 @@
             conjuntoRows = await Http.GetFromJsonAsync<List<Conjunto>>("api/conjuntos") ?? new();
             usuariosRows = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new();
             rolesRows = await Http.GetFromJsonAsync<List<Rol>>("api/roles") ?? new();
+            allApartamentos = await Http.GetFromJsonAsync<List<Apartamento>>("api/apartamentos") ?? new();
+            allTorres = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new();
             allRoles = rolesRows;
-            
+
             if (conjuntoRows.Count == 0) conjuntoRows.Add(new Conjunto());
             if (usuariosRows.Count == 0) usuariosRows.Add(new Usuario());
             if (rolesRows.Count == 0) rolesRows.Add(new Rol());
@@ -148,6 +169,24 @@
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private void OnApartamentoChanged(Usuario row, string? value)
+    {
+        if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int aptoId))
+        {
+            row.ApartamentoId = null;
+            row.TorreId = null;
+        }
+        else
+        {
+            row.ApartamentoId = aptoId;
+            var apto = allApartamentos.FirstOrDefault(a => a.UnidadId == aptoId);
+            if (apto != null)
+            {
+                row.TorreId = apto.TorreId;
+            }
+        }
     }
 
     private async Task SaveConjunto(Conjunto conjunto)

@@ -38,12 +38,23 @@ namespace BlazorApp1.Client.Models
         [Column("telefono")]
         public string Telefono { get; set; } = string.Empty;
 
-        [Column("activo")]
+        [NotMapped]
         public bool Activo { get; set; } = true;
 
         [Column("fechacreacion")]
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
+
+        [Column("Clave")]
         public string Clave { get; set; } = string.Empty;
+
+        [Column("espropietario")]
+        public bool? EsPropietario { get; set; }
+
+        [Column("apartamentoid")]
+        public int? ApartamentoId { get; set; }
+
+        [Column("torreid")]
+        public int? TorreId { get; set; }
     }
 
     [Table("conjunto", Schema = "dbo")]
@@ -164,6 +175,12 @@ namespace BlazorApp1.Client.Models
 
         [Column("torreid")]
         public int TorreId { get; set; }
+
+        [Column("apartamentoid")]
+        public int? ApartamentoId { get; set; }
+
+        [Column("observaciones")]
+        public string? Observaciones { get; set; }
     }
 
     [Table("zonacomun", Schema = "dbo")]
@@ -180,7 +197,7 @@ namespace BlazorApp1.Client.Models
         public bool RequierePago { get; set; }
 
         [Column("valorhora")]
-        public decimal ValorHora { get; set; }
+        public int? ValorHora { get; set; }
     }
 
     [Table("tipomantenimiento", Schema = "dbo")]
@@ -284,5 +301,8 @@ namespace BlazorApp1.Client.Models
 
         [Column("estado")]
         public string Estado { get; set; } = string.Empty;
+
+        [Column("totalcobrar")]
+        public decimal? TotalCobrar { get; set; }
     }
 }

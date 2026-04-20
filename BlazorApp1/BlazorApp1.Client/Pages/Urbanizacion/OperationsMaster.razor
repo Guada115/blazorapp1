@@ -45,12 +45,12 @@
         {
             <EntityTable TItem="Reserva"
                          Title="Listado de Reservas"
-                         Headers='new() { "Zona Común", "Usuario", "Fecha", "Inicio", "Fin", "Estado" }'
+                         Headers='new() { "Zona Común", "Usuario", "Fecha", "Inicio", "Fin", "Estado", "Total Cobrar" }'
                          Items="reservaRows"
                          OnAddRow='() => AddRow(reservaRows)' OnSaveRow='SaveReserva'>
                 <RowTemplate Context="row">
                     <td>
-                        <select class="form-select" @bind="row.ZonaComunId">
+                        <select class="form-select" @bind="row.ZonaComunId" @bind:after="() => CalcularTotal(row)">
                             <option value="0">Seleccionar Zona...</option>
                             @foreach (var z in zonaRows)
                             {
@@ -60,32 +60,24 @@
                     </td>
                     <td>
                         <select class="form-select" @bind="row.UsuarioId" disabled="@isResidente">
-                            @if (isResidente)
+                            <option value="0">Seleccionar Usuario...</option>
+                            @foreach (var u in allUsuarios)
                             {
-                                var me = allUsuarios.FirstOrDefault(u => u.UsuarioId == currentUserId);
-                                if (me != null)
-                                {
-                                    <option value="@me.UsuarioId">@me.Nombre</option>
-                                }
-                                else
-                                {
-                                    <option value="@currentUserId">Mi Usuario</option>
-                                }
-                            }
-                            else
-                            {
-                                <option value="0">Seleccionar Usuario...</option>
-                                @foreach (var u in allUsuarios)
-                                {
-                                    <option value="@u.UsuarioId">@u.Nombre</option>
-                                }
+                                <option value="@u.UsuarioId">@u.Nombre</option>
                             }
                         </select>
                     </td>
                     <td><input type="date" class="form-control" @bind="row.Fecha" /></td>
-                    <td><input type="time" class="form-control" @bind="row.HoraInicio" /></td>
-                    <td><input type="time" class="form-control" @bind="row.HoraFin" /></td>
+                    <td><input type="time" class="form-control" @bind="row.HoraInicio" @bind:after="() => CalcularTotal(row)" /></td>
+                    <td><input type="time" class="form-control" @bind="row.HoraFin" @bind:after="() => CalcularTotal(row)" /></td>
                     <td><input type="text" class="form-control" @bind="row.Estado" placeholder="Estado" disabled="@isResidente" /></td>
+                    <td>
+                        <input type="number" class="form-control" 
+                               value="@row.TotalCobrar" 
+                               @onchange="@(e => { if(decimal.TryParse(e.Value?.ToString(), out var parsed)) row.TotalCobrar = parsed; else row.TotalCobrar = null; })" 
+                               placeholder="Total" 
+                               disabled="@isResidente" />
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -103,7 +95,13 @@
                             <input class="form-check-input" type="checkbox" @bind="row.RequierePago" disabled="@isResidente" />
                         </div>
                     </td>
-                    <td><input type="number" class="form-control" @bind="row.ValorHora" placeholder="Valor Hora" disabled="@isResidente" /></td>
+                    <td>
+                        <input type="number" class="form-control" 
+                               value="@row.ValorHora" 
+                               @onchange="@(e => { if(int.TryParse(e.Value?.ToString(), out var parsed)) row.ValorHora = parsed; else row.ValorHora = null; })" 
+                               placeholder="Valor Hora" 
+                               disabled="@isResidente" />
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -230,6 +228,23 @@
             r.UsuarioId = currentUserId;
         }
         target.Add(newItem);
+    }
+
+    private void CalcularTotal(Reserva row)
+    {
+        var zona = zonaRows.FirstOrDefault(z => z.ZonaComunId == row.ZonaComunId);
+        if (zona != null && zona.RequierePago && zona.ValorHora.HasValue && zona.ValorHora.Value > 0)
+        {
+            // Calcula la diferencia en horas. SQL DATEDIFF(HOUR) calcula restando la parte de la hora directamente.
+            int hours = row.HoraFin.Hour - row.HoraInicio.Hour;
+            if (hours < 0) hours += 24; // Por seguridad si se pasa de medianoche
+
+            row.TotalCobrar = hours * zona.ValorHora.Value;
+        }
+        else
+        {
+            row.TotalCobrar = 0;
+        }
     }
 
     private async Task SaveReserva(Reserva reserva)

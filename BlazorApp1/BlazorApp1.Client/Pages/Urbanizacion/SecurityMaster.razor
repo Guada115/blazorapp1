@@ -44,23 +44,37 @@
         {
             <EntityTable TItem="Ingreso"
                          Title="Registro de Ingresos"
-                         Headers='new() { "Tipo", "Nombre Persona", "Documento", "Ingreso", "Salida", "Torre" }'
+                         Headers='new() { "Tipo", "Nombre", "Documento", "Ingreso", "Salida", "Apartamento", "Torre", "Observaciones" }'
                          Items="ingresoRows"
                          OnAddRow='() => AddRow(ingresoRows)' OnSaveRow='SaveIngreso'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
-                    <td><input type="text" class="form-control" @bind="row.NombrePersona" placeholder="Nombre Persona" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Documento" placeholder="Documento" /></td>
+                    <td><input type="text" class="form-control" @bind="row.NombrePersona" placeholder="Nombre" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Documento" placeholder="Doc" /></td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraIngreso" /></td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraSalida" /></td>
                     <td>
-                        <select class="form-select" @bind="row.TorreId">
-                            <option value="0">Seleccionar Torre...</option>
+                        <select class="form-select" value="@row.ApartamentoId" @onchange="@(e => OnApartamentoChanged(row, e.Value?.ToString()))">
+                            <option value="">Seleccionar...</option>
+                            @foreach (var a in allUnidades)
+                            {
+                                <option value="@((int)a.UnidadId)">@a.Numero - @a.Tipo</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.TorreId" disabled>
+                            <option value="0">N/A</option>
                             @foreach (var t in allTorres)
                             {
                                 <option value="@t.TorreId">@t.Nombre</option>
                             }
                         </select>
+                    </td>
+                    <td>
+                        <textarea class="form-control" rows="1" @bind="row.Observaciones" placeholder="Observaciones..." 
+                                  style="resize:none; overflow:hidden; min-height: 38px;"
+                                  oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></textarea>
                     </td>
                 </RowTemplate>
             </EntityTable>
@@ -83,7 +97,11 @@
                         </select>
                     </td>
                     <td><input type="datetime-local" class="form-control" @bind="row.FechaHora" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Observacion" placeholder="Observación" /></td>
+                    <td>
+                        <textarea class="form-control" rows="1" @bind="row.Observacion" placeholder="Observación..." 
+                                  style="resize:none; overflow:hidden; min-height: 38px;"
+                                  oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></textarea>
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -209,6 +227,24 @@
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private void OnApartamentoChanged(Ingreso row, string? value)
+    {
+        if (string.IsNullOrEmpty(value) || !int.TryParse(value, out int aptoId))
+        {
+            row.ApartamentoId = null;
+            row.TorreId = 0;
+        }
+        else
+        {
+            row.ApartamentoId = aptoId;
+            var apto = allUnidades.FirstOrDefault(a => a.UnidadId == aptoId);
+            if (apto != null)
+            {
+                row.TorreId = apto.TorreId;
+            }
+        }
     }
 
     private async Task SaveIngreso(Ingreso ingreso)
