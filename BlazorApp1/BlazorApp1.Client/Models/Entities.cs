@@ -55,6 +55,8 @@ namespace BlazorApp1.Client.Models
 
         [Column("torreid")]
         public int? TorreId { get; set; }
+
+        public override string ToString() => $"{Nombre} {Email} {Documento} {Telefono}";
     }
 
     [Table("conjunto", Schema = "dbo")]
