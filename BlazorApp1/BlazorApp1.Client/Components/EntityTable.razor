@@ -132,7 +132,9 @@
     [Parameter] public string ReportEntity { get; set; } = "";
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
-    [Inject] private Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
 
     private bool isAdmin = false;
     private DateTime? ReportStartDate { get; set; }
@@ -142,12 +144,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        if (user.Identity?.IsAuthenticated == true)
+        if (AuthStateTask != null)
         {
-            var roleClaim = user.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-            if (roleClaim == "3") isAdmin = true;
+            var authState = await AuthStateTask;
+            var user = authState.User;
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                var roleClaim = user.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                if (roleClaim == "3") 
+                {
+                    isAdmin = true;
+                }
+            }
         }
     }
 

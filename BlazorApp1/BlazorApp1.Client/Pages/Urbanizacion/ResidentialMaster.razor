@@ -61,14 +61,14 @@
         {
             <EntityTable TItem="Apartamento"
                          Title="Registro de Apartamentos"
-                         Headers='new() { "Torre", "Número", "Tipo", "Área (m²)" }'
+                         Headers='new() { "Número", "Torre", "Tipo", "Conjunto" }'
                          Items="apartamentoRows"
                          ShowReportButton="true" ReportEntity="apartamentos"
                          OnAddRow='() => AddRow(apartamentoRows)' OnSaveRow='SaveApartamento'>
                 <RowTemplate Context="row">
                     <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
                     <td>
-                        <select class="form-select" @bind="row.TorreId">
+                        <select class="form-select" value="@row.TorreId" @onchange="@(e => OnTorreChanged(row, e.Value?.ToString()))">
                             <option value="0">Seleccionar Torre...</option>
                             @foreach (var t in torreRows)
                             {
@@ -76,8 +76,23 @@
                             }
                         </select>
                     </td>
-                    <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
-                    <td><input type="number" class="form-control" @bind="row.Area" placeholder="Área" /></td>
+                    <td>
+                        <select class="form-select" @bind="row.Tipo">
+                            <option value="">Seleccionar Tipo...</option>
+                            <option value="apartaestudio">Apartaestudio</option>
+                            <option value="familiar">Familiar</option>
+                            <option value="duplex">Dúplex</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.ConjuntoId" disabled>
+                            <option value="">Seleccionar Conjunto...</option>
+                            @foreach (var c in allConjuntos)
+                            {
+                                <option value="@((int)c.ConjuntoId)">@c.Nombre</option>
+                            }
+                        </select>
+                    </td>
                 </RowTemplate>
             </EntityTable>
         }
@@ -164,6 +179,24 @@
         target.Add(new T());
     }
 
+    private void OnTorreChanged(Apartamento row, string? value)
+    {
+        if (int.TryParse(value, out int torreId))
+        {
+            row.TorreId = torreId;
+            var torre = torreRows.FirstOrDefault(t => t.TorreId == torreId);
+            if (torre != null)
+            {
+                row.ConjuntoId = torre.ConjuntoId;
+            }
+        }
+        else
+        {
+            row.TorreId = 0;
+            row.ConjuntoId = null;
+        }
+    }
+
     private async Task SaveTorre(Torre torre)
     {
         try
@@ -196,7 +229,7 @@
             if (response.IsSuccessStatusCode)
             {
                 var saved = await response.Content.ReadFromJsonAsync<Apartamento>();
-                if (saved != null) apartamento.UnidadId = saved.UnidadId;
+                if (saved != null) apartamento.ApartamentoId = saved.ApartamentoId;
                 await JS.InvokeVoidAsync("alert", "Apartamento guardado correctamente!");
             }
             else

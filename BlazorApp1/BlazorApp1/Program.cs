@@ -66,7 +66,7 @@ api.MapGet("/torres", async (AppDbContext db) => await db.Torres.ToListAsync());
 api.MapPost("/torres", async (AppDbContext db, Torre t) => { if (t.TorreId == 0) db.Torres.Add(t); else db.Torres.Update(t); await db.SaveChangesAsync(); return Results.Ok(t); });
 
 api.MapGet("/apartamentos", async (AppDbContext db) => await db.Apartamentos.ToListAsync());
-api.MapPost("/apartamentos", async (AppDbContext db, Apartamento a) => { if (a.UnidadId == 0) db.Apartamentos.Add(a); else db.Apartamentos.Update(a); await db.SaveChangesAsync(); return Results.Ok(a); });
+api.MapPost("/apartamentos", async (AppDbContext db, Apartamento a) => { if (a.ApartamentoId == 0) db.Apartamentos.Add(a); else db.Apartamentos.Update(a); await db.SaveChangesAsync(); return Results.Ok(a); });
 
 api.MapGet("/bitacora", async (AppDbContext db) => await db.BitacorasVigilancia.ToListAsync());
 api.MapPost("/bitacora", async (AppDbContext db, BitacoraVigilancia b) => { if (b.BitacoraId == 0) db.BitacorasVigilancia.Add(b); else db.BitacorasVigilancia.Update(b); await db.SaveChangesAsync(); return Results.Ok(b); });
@@ -195,12 +195,14 @@ api.MapGet("/export/{entidad}", async (AppDbContext db, string entidad, DateTime
             var aptos = await (from a in db.Apartamentos
                                join t in db.Torres on a.TorreId equals t.TorreId into at
                                from t in at.DefaultIfEmpty()
+                               join c in db.Conjuntos on (long?)a.ConjuntoId equals c.ConjuntoId into ac
+                               from c in ac.DefaultIfEmpty()
                                select new
                                {
-                                   ID = a.UnidadId,
+                                   ID = a.ApartamentoId,
                                    Numero = a.Numero,
                                    Tipo = a.Tipo,
-                                   Area = a.Area,
+                                   Conjunto = c != null ? c.Nombre : "N/A",
                                    Torre = t != null ? t.Nombre : "N/A"
                                }).ToListAsync();
             worksheet.Cell(1, 1).InsertTable(aptos);
@@ -240,7 +242,7 @@ api.MapGet("/export/{entidad}", async (AppDbContext db, string entidad, DateTime
             if (inicio.HasValue) queryIng = queryIng.Where(i => i.FechaHoraIngreso >= inicio.Value);
             if (fin.HasValue) queryIng = queryIng.Where(i => i.FechaHoraSalida <= fin.Value);
             var ingresos = await (from i in queryIng
-                                  join a in db.Apartamentos on i.ApartamentoId equals (int)a.UnidadId into ia
+                                  join a in db.Apartamentos on i.ApartamentoId equals (int)a.ApartamentoId into ia
                                   from a in ia.DefaultIfEmpty()
                                   join t in db.Torres on i.TorreId equals t.TorreId into it
                                   from t in it.DefaultIfEmpty()
@@ -272,7 +274,7 @@ api.MapGet("/export/{entidad}", async (AppDbContext db, string entidad, DateTime
             var usuarios = await (from u in db.Usuarios
                                   join r in db.Roles on (long)u.RolId equals r.RolId into ur
                                   from r in ur.DefaultIfEmpty()
-                                  join a in db.Apartamentos on u.ApartamentoId equals (int)a.UnidadId into ua
+                                  join a in db.Apartamentos on u.ApartamentoId equals (int)a.ApartamentoId into ua
                                   from a in ua.DefaultIfEmpty()
                                   select new {
                                       ID = u.UsuarioId,

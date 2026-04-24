@@ -59,7 +59,7 @@
                             <option value="">Seleccionar...</option>
                             @foreach (var a in allUnidades)
                             {
-                                <option value="@((int)a.UnidadId)">@a.Numero - @a.Tipo</option>
+                                <option value="@((int)a.ApartamentoId)">@a.Numero - @a.Tipo</option>
                             }
                         </select>
                     </td>
@@ -234,7 +234,7 @@
         else
         {
             row.ApartamentoId = aptoId;
-            var apto = allUnidades.FirstOrDefault(a => a.UnidadId == aptoId);
+            var apto = allUnidades.FirstOrDefault(a => a.ApartamentoId == aptoId);
             if (apto != null)
             {
                 row.TorreId = apto.TorreId;

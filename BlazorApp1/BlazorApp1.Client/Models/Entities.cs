@@ -98,8 +98,8 @@ namespace BlazorApp1.Client.Models
     public class Apartamento
     {
         [Key]
-        [Column("unidadid")]
-        public long UnidadId { get; set; }
+        [Column("apartamentoid")]
+        public long ApartamentoId { get; set; }
 
         [Column("torreid")]
         public int TorreId { get; set; }
@@ -110,8 +110,8 @@ namespace BlazorApp1.Client.Models
         [Column("tipo")]
         public string Tipo { get; set; } = string.Empty;
 
-        [Column("area")]
-        public decimal Area { get; set; }
+        [Column("conjuntoid")]
+        public int? ConjuntoId { get; set; }
     }
 
     [Table("residenteunidad", Schema = "dbo")]
