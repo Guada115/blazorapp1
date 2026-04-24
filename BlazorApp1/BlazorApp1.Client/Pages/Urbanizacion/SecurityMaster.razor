@@ -134,24 +134,52 @@
         {
             <EntityTable TItem="ParqueaderoVisitante"
                          Title="Registro de Visitantes"
-                         Headers='new() { "Placa", "Ingreso", "Salida", "Parqueadero" }'
+                         Headers='new() { "Tipo", "Placa", "Ocupado", "Apartamento", "Torre", "Conjunto" }'
                          Items="visitanteRows"
                          ShowReportButton="true" ReportEntity="visitantes" RequiresDateRange="true"
                          OnAddRow='() => AddRow(visitanteRows)' OnSaveRow='SaveVisitante'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Placa" /></td>
-                    <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraIngreso" /></td>
-                    <td><input type="datetime-local" class="form-control" @bind="row.FechaHoraSalida" /></td>
+                    @{
+                        var t = allUnidades.FirstOrDefault(a => a.ApartamentoId == row.ApartamentoId) is Apartamento apto 
+                            ? allTorres.FirstOrDefault(x => x.TorreId == apto.TorreId) 
+                            : null;
+                        var c = t != null ? allConjuntos.FirstOrDefault(x => x.ConjuntoId == t.ConjuntoId) : null;
+                    }
                     <td>
-                        <select class="form-select" @bind="row.ParqueaderoId">
-                            <option value="0">Seleccionar Parqueadero...</option>
-                            @foreach (var p in parqueaderoRows.Where(p => p.ParqueaderoId != 0))
+                        <select class="form-select" @bind="row.Tipo">
+                            <option value="">Seleccionar...</option>
+                            <option value="carro">Carro</option>
+                            <option value="moto">Moto</option>
+                            <option value="movilidad reducida">Movilidad Reducida</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" @bind="row.Placa" /></td>
+                    <td class="text-center">
+                        <div class="form-check form-switch mt-1 d-inline-block">
+                            <input class="form-check-input" type="checkbox" @bind="row.Ocupado" />
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.ApartamentoId">
+                            <option value="">Seleccionar Apartamento...</option>
+                            @foreach (var a in allUnidades)
                             {
-                                <option value="@p.ParqueaderoId">@p.Numero (@p.Tipo)</option>
+                                <option value="@((long)a.ApartamentoId)">@a.Numero - @a.Tipo</option>
                             }
                         </select>
                     </td>
+                    <td>
+                        <input type="text" class="form-control" value="@(t?.Nombre ?? "N/A")" readonly disabled />
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" value="@(c?.Nombre ?? "N/A")" readonly disabled />
+                    </td>
                 </RowTemplate>
+                <ExtraActionsTemplate Context="row">
+                    <button type="button" class="btn btn-warning btn-sm me-1" title="Liberar" @onclick="() => LiberarVisitante(row)">
+                        <i class="bi bi-unlock"></i> Liberar
+                    </button>
+                </ExtraActionsTemplate>
             </EntityTable>
         }
     </div>
@@ -184,6 +212,7 @@
     private List<Apartamento> allUnidades = new();
     private List<Usuario> allVigilantes = new();
     private List<Torre> allTorres = new();
+    private List<Conjunto> allConjuntos = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -201,6 +230,7 @@
             allVigilantes = usus.Where(u => u.RolId == 1).ToList();
 
             allTorres = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new();
+            allConjuntos = await Http.GetFromJsonAsync<List<Conjunto>>("api/conjuntos") ?? new();
 
             if (ingresoRows.Count == 0) ingresoRows.Add(new Ingreso { FechaHoraIngreso = DateTime.Now });
             if (bitacoraRows.Count == 0) bitacoraRows.Add(new BitacoraVigilancia { FechaHora = DateTime.Now });
@@ -314,8 +344,25 @@
         }
     }
 
+    private async Task LiberarVisitante(ParqueaderoVisitante visitante)
+    {
+        visitante.Placa = string.Empty;
+        visitante.Ocupado = false;
+        visitante.ApartamentoId = null;
+        visitante.FechaHoraSalida = DateTime.Now; // Update exit time but hidden
+        visitante.FechaHoraIngreso = null; // Clean for the next visitor
+        await SaveVisitante(visitante);
+    }
+
     private async Task SaveVisitante(ParqueaderoVisitante visitante)
     {
+        // Se manejan automáticamente las fechas de ingreso y salida basados en estado Ocupado
+        if (visitante.Ocupado && visitante.FechaHoraIngreso == null)
+        {
+            visitante.FechaHoraIngreso = DateTime.Now;
+            visitante.FechaHoraSalida = null;
+        }
+
         try
         {
             var response = await Http.PostAsJsonAsync("api/visitantes", visitante);

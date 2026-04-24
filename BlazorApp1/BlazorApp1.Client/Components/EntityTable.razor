@@ -59,6 +59,10 @@
                                 @if (!ReadOnly)
                                 {
                                     <td class="text-end pe-4">
+                                        @if (ExtraActionsTemplate != null)
+                                        {
+                                            @ExtraActionsTemplate(item)
+                                        }
                                         <button type="button" class="btn btn-success btn-sm me-1" title="Guardar" @onclick="() => SaveItem(item)">
                                             <i class="bi bi-save"></i> Guardar
                                         </button>
@@ -123,6 +127,7 @@
     [Parameter] public List<string> Headers { get; set; } = new();
     [Parameter] public List<TItem> Items { get; set; } = new();
     [Parameter] public RenderFragment<TItem> RowTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment<TItem>? ExtraActionsTemplate { get; set; }
     [Parameter] public EventCallback OnAddRow { get; set; }
     [Parameter] public EventCallback<TItem> OnSaveRow { get; set; }
     [Parameter] public bool ReadOnly { get; set; } = false;

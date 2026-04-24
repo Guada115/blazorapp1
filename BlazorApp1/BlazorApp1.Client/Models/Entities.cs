@@ -261,22 +261,25 @@ namespace BlazorApp1.Client.Models
     {
         [Key]
         [Column("parqueaderovisitanteid")]
-        public long ParqueaderoVisitanteId { get; set; }
+        public int ParqueaderoVisitanteId { get; set; }
 
-        [Column("parqueaderoid")]
-        public int ParqueaderoId { get; set; }
+        [Column("tipo")]
+        public string Tipo { get; set; } = string.Empty;
+
+        [Column("ocupado")]
+        public bool Ocupado { get; set; }
 
         [Column("placa")]
         public string Placa { get; set; } = string.Empty;
 
+        [Column("apartamentoid")]
+        public long? ApartamentoId { get; set; }
+
         [Column("fechahoraingreso")]
-        public DateTime FechaHoraIngreso { get; set; }
+        public DateTime? FechaHoraIngreso { get; set; }
 
         [Column("fechahorasalida")]
         public DateTime? FechaHoraSalida { get; set; }
-
-        [Column("ingresoid")]
-        public int IngresoId { get; set; }
     }
 
     [Table("reserva", Schema = "dbo")]

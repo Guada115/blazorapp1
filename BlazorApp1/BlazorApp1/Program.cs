@@ -214,10 +214,12 @@ api.MapGet("/export/{entidad}", async (AppDbContext db, string entidad, DateTime
             var visitantes = await queryVis.Select(v => new
             {
                 ID = v.ParqueaderoVisitanteId,
+                Tipo = v.Tipo,
                 Placa = v.Placa,
                 Ingreso = v.FechaHoraIngreso,
                 Salida = v.FechaHoraSalida,
-                AsignadoA = v.ParqueaderoId
+                AsignadoA = v.ApartamentoId,
+                Ocupado = v.Ocupado ? "Sí" : "No"
             }).ToListAsync();
             worksheet.Cell(1, 1).InsertTable(visitantes);
             break;
