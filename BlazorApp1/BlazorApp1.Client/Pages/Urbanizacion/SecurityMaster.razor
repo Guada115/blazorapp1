@@ -132,10 +132,62 @@
         }
         else if (activeTab == "visitantes")
         {
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-3 bg-light rounded-3 d-flex flex-wrap gap-3 align-items-end">
+                    <div style="width: 200px;">
+                        <label class="form-label fw-bold small text-muted mb-1">Filtrar por Estado</label>
+                        <select class="form-select form-select-sm" @bind="filtroEstadoVis">
+                            <option value="">Todos</option>
+                            <option value="ocupado">Ocupado</option>
+                            <option value="disponible">Disponible</option>
+                        </select>
+                    </div>
+                    <div style="width: 200px;">
+                        <label class="form-label fw-bold small text-muted mb-1">Filtrar por Tipo</label>
+                        <select class="form-select form-select-sm" @bind="filtroTipoVis">
+                            <option value="">Todos</option>
+                            <option value="carro">Carro</option>
+                            <option value="moto">Moto</option>
+                            <option value="movilidad reducida">Movilidad Reducida</option>
+                        </select>
+                    </div>
+                    <div style="width: 200px;">
+                        <label class="form-label fw-bold small text-muted mb-1">Filtrar por Apartamento</label>
+                        <select class="form-select form-select-sm" @bind="filtroAptoVis">
+                            <option value="0">Todos</option>
+                            @foreach (var a in allUnidades)
+                            {
+                                <option value="@a.ApartamentoId">@a.Numero - @a.Tipo</option>
+                            }
+                        </select>
+                    </div>
+                    <div style="width: 200px;">
+                        <label class="form-label fw-bold small text-muted mb-1">Filtrar por Torre</label>
+                        <select class="form-select form-select-sm" @bind="filtroTorreVis">
+                            <option value="0">Todas</option>
+                            @foreach (var t in allTorres)
+                            {
+                                <option value="@t.TorreId">@t.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <div style="width: 200px;">
+                        <label class="form-label fw-bold small text-muted mb-1">Filtrar por Conjunto</label>
+                        <select class="form-select form-select-sm" @bind="filtroConjuntoVis">
+                            <option value="0">Todos</option>
+                            @foreach (var c in allConjuntos)
+                            {
+                                <option value="@c.ConjuntoId">@c.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <EntityTable TItem="ParqueaderoVisitante"
                          Title="Registro de Visitantes"
-                         Headers='new() { "Tipo", "Placa", "Ocupado", "Apartamento", "Torre", "Conjunto" }'
-                         Items="visitanteRows"
+                         Headers='new() { "Tipo", "Placa", "Ocupado", "Apartamento Visitado", "Torre", "Conjunto" }'
+                         Items="FilteredVisitantesRows"
                          ShowReportButton="true" ReportEntity="visitantes" RequiresDateRange="true"
                          OnAddRow='() => AddRow(visitanteRows)' OnSaveRow='SaveVisitante'>
                 <RowTemplate Context="row">
@@ -213,6 +265,58 @@
     private List<Usuario> allVigilantes = new();
     private List<Torre> allTorres = new();
     private List<Conjunto> allConjuntos = new();
+
+    // Filtros para visitantes
+    private string filtroEstadoVis = "";
+    private string filtroTipoVis = "";
+    private long filtroAptoVis = 0;
+    private int filtroTorreVis = 0;
+    private int filtroConjuntoVis = 0;
+
+    private List<ParqueaderoVisitante> FilteredVisitantesRows
+    {
+        get
+        {
+            var query = visitanteRows.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(filtroEstadoVis))
+            {
+                if (filtroEstadoVis == "ocupado")
+                {
+                    query = query.Where(v => v.ParqueaderoVisitanteId == 0 || v.Ocupado);
+                }
+                else if (filtroEstadoVis == "disponible")
+                {
+                    query = query.Where(v => v.ParqueaderoVisitanteId == 0 || !v.Ocupado);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(filtroTipoVis))
+            {
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || v.Tipo?.Equals(filtroTipoVis, StringComparison.OrdinalIgnoreCase) == true);
+            }
+
+            if (filtroAptoVis != 0)
+            {
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || v.ApartamentoId == filtroAptoVis);
+            }
+
+            if (filtroTorreVis != 0)
+            {
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || 
+                    (v.ApartamentoId.HasValue && allUnidades.FirstOrDefault(a => a.ApartamentoId == v.ApartamentoId)?.TorreId == filtroTorreVis));
+            }
+
+            if (filtroConjuntoVis != 0)
+            {
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || 
+                    (v.ApartamentoId.HasValue && 
+                    allTorres.FirstOrDefault(t => t.TorreId == (allUnidades.FirstOrDefault(a => a.ApartamentoId == v.ApartamentoId)?.TorreId ?? 0))?.ConjuntoId == filtroConjuntoVis));
+            }
+
+            return query.ToList();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

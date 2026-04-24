@@ -445,6 +445,18 @@
 
     private async Task SaveUsuario(Usuario usuario)
     {
+        if (usuariosRows.Any(u => u.UsuarioId != usuario.UsuarioId && !string.IsNullOrEmpty(u.Documento) && u.Documento.Equals(usuario.Documento, StringComparison.OrdinalIgnoreCase)))
+        {
+            await JS.InvokeVoidAsync("alert", "Ya existe un usuario con este documento.");
+            return;
+        }
+
+        if (usuariosRows.Any(u => u.UsuarioId != usuario.UsuarioId && !string.IsNullOrEmpty(u.Email) && u.Email.Equals(usuario.Email, StringComparison.OrdinalIgnoreCase)))
+        {
+            await JS.InvokeVoidAsync("alert", "Ya existe un usuario registrado con este email.");
+            return;
+        }
+
         if (usuario.EsPropietario == true && usuario.ApartamentoId.HasValue)
         {
             if (usuariosRows.Any(u => u.UsuarioId != usuario.UsuarioId && u.ApartamentoId == usuario.ApartamentoId && u.EsPropietario == true))

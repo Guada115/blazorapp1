@@ -164,9 +164,35 @@
         }
     }
 
-    private IEnumerable<TItem> FilteredItems => string.IsNullOrWhiteSpace(SearchTerm) 
-        ? Items 
-        : Items.Where(i => i?.ToString()?.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) == true);
+    private IEnumerable<TItem> FilteredItems
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SearchTerm) || Items == null)
+            {
+                return Items ?? new List<TItem>();
+            }
+
+            var lowerSearch = SearchTerm.ToLower();
+            var properties = typeof(TItem).GetProperties()
+                                          .Where(p => p.CanRead)
+                                          .ToList();
+
+            return Items.Where(item =>
+            {
+                if (item == null) return false;
+                foreach (var prop in properties)
+                {
+                    var val = prop.GetValue(item);
+                    if (val != null && val.ToString()!.ToLower().Contains(lowerSearch))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+    }
 
     private async Task SaveItem(TItem item)
     {
