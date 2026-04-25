@@ -111,19 +111,43 @@
         {
             <EntityTable TItem="Parqueadero"
                          Title="Espacios de Parqueo"
-                         Headers='new() { "Tipo", "Número", "Torre" }'
+                         Headers='new() { "Tipo", "Apartamento", "Torre", "Conjunto" }'
                          Items="parqueaderoRows"
                          ShowReportButton="true" ReportEntity="parqueaderos"
                          OnAddRow='() => AddRow(parqueaderoRows)' OnSaveRow='SaveParqueadero'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Tipo" placeholder="Tipo" /></td>
-                    <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
                     <td>
-                        <select class="form-select" @bind="row.TorreId">
-                            <option value="0">Seleccionar Torre...</option>
+                        <select class="form-select" @bind="row.Tipo">
+                            <option value="">Seleccionar...</option>
+                            <option value="carro">carro</option>
+                            <option value="moto">moto</option>
+                            <option value="movilidad reducida">movilidad reducida</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" value="@row.ApartamentoId" @onchange="@(e => OnParqueaderoApartamentoChanged(row, e.Value?.ToString()))">
+                            <option value="">Seleccionar Apartamento...</option>
+                            @foreach (var a in allUnidades)
+                            {
+                                <option value="@((long)a.ApartamentoId)">@a.Numero - @a.Tipo</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.TorreId" disabled>
+                            <option value="0">N/A</option>
                             @foreach (var t in allTorres)
                             {
                                 <option value="@t.TorreId">@t.Nombre</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-select" @bind="row.ConjuntoId" disabled>
+                            <option value="">N/A</option>
+                            @foreach (var c in allConjuntos)
+                            {
+                                <option value="@((long?)c.ConjuntoId)">@c.Nombre</option>
                             }
                         </select>
                     </td>
@@ -191,12 +215,6 @@
                          ShowReportButton="true" ReportEntity="visitantes" RequiresDateRange="true"
                          OnAddRow='() => AddRow(visitanteRows)' OnSaveRow='SaveVisitante'>
                 <RowTemplate Context="row">
-                    @{
-                        var t = allUnidades.FirstOrDefault(a => a.ApartamentoId == row.ApartamentoId) is Apartamento apto 
-                            ? allTorres.FirstOrDefault(x => x.TorreId == apto.TorreId) 
-                            : null;
-                        var c = t != null ? allConjuntos.FirstOrDefault(x => x.ConjuntoId == t.ConjuntoId) : null;
-                    }
                     <td>
                         <select class="form-select" @bind="row.Tipo">
                             <option value="">Seleccionar...</option>
@@ -212,7 +230,7 @@
                         </div>
                     </td>
                     <td>
-                        <select class="form-select" @bind="row.ApartamentoId">
+                        <select class="form-select" value="@row.ApartamentoId" @onchange="@(e => OnApartamentoVisitanteChanged(row, e.Value?.ToString()))">
                             <option value="">Seleccionar Apartamento...</option>
                             @foreach (var a in allUnidades)
                             {
@@ -221,10 +239,22 @@
                         </select>
                     </td>
                     <td>
-                        <input type="text" class="form-control" value="@(t?.Nombre ?? "N/A")" readonly disabled />
+                        <select class="form-select" @bind="row.TorreId">
+                            <option value="0">N/A</option>
+                            @foreach (var t in allTorres)
+                            {
+                                <option value="@t.TorreId">@t.Nombre</option>
+                            }
+                        </select>
                     </td>
                     <td>
-                        <input type="text" class="form-control" value="@(c?.Nombre ?? "N/A")" readonly disabled />
+                        <select class="form-select" @bind="row.ConjuntoId">
+                            <option value="0">N/A</option>
+                            @foreach (var c in allConjuntos)
+                            {
+                                <option value="@((int)c.ConjuntoId)">@c.Nombre</option>
+                            }
+                        </select>
                     </td>
                 </RowTemplate>
                 <ExtraActionsTemplate Context="row">
@@ -303,15 +333,12 @@
 
             if (filtroTorreVis != 0)
             {
-                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || 
-                    (v.ApartamentoId.HasValue && allUnidades.FirstOrDefault(a => a.ApartamentoId == v.ApartamentoId)?.TorreId == filtroTorreVis));
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || v.TorreId == filtroTorreVis);
             }
 
             if (filtroConjuntoVis != 0)
             {
-                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || 
-                    (v.ApartamentoId.HasValue && 
-                    allTorres.FirstOrDefault(t => t.TorreId == (allUnidades.FirstOrDefault(a => a.ApartamentoId == v.ApartamentoId)?.TorreId ?? 0))?.ConjuntoId == filtroConjuntoVis));
+                query = query.Where(v => v.ParqueaderoVisitanteId == 0 || v.ConjuntoId == filtroConjuntoVis);
             }
 
             return query.ToList();
@@ -353,9 +380,55 @@
 
     private void SetTab(string tab) => activeTab = tab;
 
+    private void OnParqueaderoApartamentoChanged(Parqueadero row, string? value)
+    {
+        if (string.IsNullOrEmpty(value) || !long.TryParse(value, out long aptoId))
+        {
+            row.ApartamentoId = null;
+            row.TorreId = 0;
+            row.ConjuntoId = null;
+        }
+        else
+        {
+            row.ApartamentoId = aptoId;
+            var apto = allUnidades.FirstOrDefault(a => a.ApartamentoId == aptoId);
+            if (apto != null)
+            {
+                row.TorreId = apto.TorreId;
+                var t = allTorres.FirstOrDefault(x => x.TorreId == apto.TorreId);
+                if (t != null)
+                {
+                    row.ConjuntoId = t.ConjuntoId;
+                }
+            }
+        }
+    }
+
     private void AddRow<T>(List<T> target) where T : new()
     {
         target.Add(new T());
+    }
+
+    private void OnApartamentoVisitanteChanged(ParqueaderoVisitante row, string? value)
+    {
+        if (string.IsNullOrEmpty(value) || !long.TryParse(value, out long aptoId))
+        {
+            row.ApartamentoId = null;
+        }
+        else
+        {
+            row.ApartamentoId = aptoId;
+            var apto = allUnidades.FirstOrDefault(a => a.ApartamentoId == aptoId);
+            if (apto != null)
+            {
+                row.TorreId = apto.TorreId;
+                var t = allTorres.FirstOrDefault(x => x.TorreId == apto.TorreId);
+                if (t != null)
+                {
+                    row.ConjuntoId = t.ConjuntoId;
+                }
+            }
+        }
     }
 
     private void OnApartamentoChanged(Ingreso row, string? value)

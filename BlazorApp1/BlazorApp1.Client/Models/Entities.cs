@@ -244,16 +244,19 @@ namespace BlazorApp1.Client.Models
     {
         [Key]
         [Column("parqueaderoid")]
-        public long ParqueaderoId { get; set; }
+        public int ParqueaderoId { get; set; }
 
         [Column("tipo")]
         public string Tipo { get; set; } = string.Empty;
 
-        [Column("numero")]
-        public string Numero { get; set; } = string.Empty;
-
         [Column("torreid")]
-        public int TorreId { get; set; }
+        public long TorreId { get; set; }
+
+        [Column("conjuntoid")]
+        public long? ConjuntoId { get; set; }
+
+        [Column("apartamentoid")]
+        public long? ApartamentoId { get; set; }
     }
 
     [Table("parqueaderovisitante", Schema = "dbo")]
@@ -274,6 +277,12 @@ namespace BlazorApp1.Client.Models
 
         [Column("apartamentoid")]
         public long? ApartamentoId { get; set; }
+
+        [Column("torreid")]
+        public int? TorreId { get; set; }
+
+        [Column("conjuntoid")]
+        public int? ConjuntoId { get; set; }
 
         [Column("fechahoraingreso")]
         public DateTime? FechaHoraIngreso { get; set; }

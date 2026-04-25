@@ -125,7 +125,7 @@ api.MapGet("/export/{entidad}", async (AppDbContext db, string entidad, DateTime
             {
                 ID = p.ParqueaderoId,
                 Tipo = p.Tipo,
-                Numero = p.Numero,
+                ApartamentoId = p.ApartamentoId,
                 TorreID = p.TorreId
             }).ToListAsync();
             worksheet.Cell(1, 1).InsertTable(parqueaderos);
