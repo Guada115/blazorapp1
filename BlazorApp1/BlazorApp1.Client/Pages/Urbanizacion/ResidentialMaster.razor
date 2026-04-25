@@ -4,18 +4,18 @@
 @inject HttpClient Http
 @inject IJSRuntime JS
 
-<PageTitle>Gestión Residencial - Apex Housing</PageTitle>
+<PageTitle>GestiÃ³n Residencial - Apex Housing</PageTitle>
 
 <div class="container-fluid py-4 animate-up">
     <div class="d-flex justify-content-between align-items-end mb-4 page-header">
         <div>
-            <h1 class="fw-bold mb-1">Gestión Residencial</h1>
-            <p class="text-muted mb-0">Administración de la estructura física y vinculación de residentes.</p>
+            <h1 class="fw-bold mb-1">GestiÃ³n Residencial</h1>
+            <p class="text-muted mb-0">AdministraciÃ³n de la estructura fÃ­sica y vinculaciÃ³n de residentes.</p>
         </div>
     </div>
 
     <!-- Tab Navigation -->
-    <ul class="nav nav-pills mb-4 p-2 rounded-3 shadow-sm d-inline-flex border" style="background-color: var(--card-bg); border-color: rgba(255,255,255,0.05) !important;">
+    <ul class="nav nav-pills mb-4 p-2 rounded-3 shadow-sm d-inline-flex border" style="background-color: var(--card-bg); border-color: rgba(255,255,255,0.05) !important;">      
         <li class="nav-item">
             <button class="nav-link @(activeTab == "torres" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("torres")'>
                 <i class="bi bi-layers me-2"></i> Torres
@@ -24,11 +24,6 @@
         <li class="nav-item">
             <button class="nav-link @(activeTab == "apartamentos" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("apartamentos")'>
                 <i class="bi bi-building me-2"></i> Apartamentos
-            </button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link @(activeTab == "residentes" ? "active" : "") fw-semibold px-4" @onclick='() => SetTab("residentes")'>
-                <i class="bi bi-person-badge me-2"></i> Residentes
             </button>
         </li>
     </ul>
@@ -61,12 +56,12 @@
         {
             <EntityTable TItem="Apartamento"
                          Title="Registro de Apartamentos"
-                         Headers='new() { "Número", "Torre", "Tipo", "Conjunto" }'
+                         Headers='new() { "NÃºmero", "Torre", "Tipo", "Conjunto" }'
                          Items="apartamentoRows"
                          ShowReportButton="true" ReportEntity="apartamentos"
                          OnAddRow='() => AddRow(apartamentoRows)' OnSaveRow='SaveApartamento'>
                 <RowTemplate Context="row">
-                    <td><input type="text" class="form-control" @bind="row.Numero" placeholder="Número" /></td>
+                    <td><input type="text" class="form-control" @bind="row.Numero" placeholder="NÃºmero" /></td>
                     <td>
                         <select class="form-select" value="@row.TorreId" @onchange="@(e => OnTorreChanged(row, e.Value?.ToString()))">
                             <option value="0">Seleccionar Torre...</option>
@@ -81,7 +76,7 @@
                             <option value="">Seleccionar Tipo...</option>
                             <option value="apartaestudio">Apartaestudio</option>
                             <option value="familiar">Familiar</option>
-                            <option value="duplex">Dúplex</option>
+                            <option value="duplex">DÃºplex</option>
                         </select>
                     </td>
                     <td>
@@ -96,41 +91,6 @@
                 </RowTemplate>
             </EntityTable>
         }
-        else if (activeTab == "residentes")
-        {
-            <EntityTable TItem="ResidenteUnidad"
-                         Title="Listado de Residentes"
-                         Headers='new() { "Usuario", "Torre", "Es Propietario" }'
-                         Items="residenteRows"
-                         ShowReportButton="true" ReportEntity="residentes"
-                         OnAddRow='() => AddRow(residenteRows)' OnSaveRow='SaveResidente'>
-                <RowTemplate Context="row">
-                    <td>
-                        <select class="form-select" @bind="row.UsuarioId">
-                            <option value="0">Seleccionar Usuario...</option>
-                            @foreach (var u in allUsuarios)
-                            {
-                                <option value="@u.UsuarioId">@u.Nombre</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <select class="form-select" @bind="row.TorreId">
-                            <option value="0">Seleccionar Torre...</option>
-                            @foreach (var a in torreRows)
-                            {
-                                <option value="@a.TorreId">@a.Nombre</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        <div class="form-check form-switch mt-1">
-                            <input class="form-check-input" type="checkbox" @bind="row.EsPropietario" />
-                        </div>
-                    </td>
-                </RowTemplate>
-            </EntityTable>
-        }
     </div>
 </div>
 
@@ -140,11 +100,11 @@
         transition: all 0.3s ease;
         border-radius: var(--radius-sm);
     }
-    
+
     .nav-pills .nav-link.active {
         box-shadow: var(--shadow-md);
     }
-    
+
     .transition-fade {
         animation: fadeIn 0.4s ease-out;
     }
@@ -152,24 +112,19 @@
 
 @code {
     private string activeTab = "torres";
-    
+
     private List<Torre> torreRows = new();
     private List<Apartamento> apartamentoRows = new();
-    private List<ResidenteUnidad> residenteRows = new();
     private List<Conjunto> allConjuntos = new();
-    private List<Usuario> allUsuarios = new();
 
     protected override async Task OnInitializedAsync()
     {
         try { torreRows = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new(); } catch (Exception ex) { Console.WriteLine("Torres err: " + ex.Message); }
         try { apartamentoRows = await Http.GetFromJsonAsync<List<Apartamento>>("api/apartamentos") ?? new(); } catch (Exception ex) { Console.WriteLine("Aptos err: " + ex.Message); }
-        try { residenteRows = await Http.GetFromJsonAsync<List<ResidenteUnidad>>("api/residentesunidades") ?? new(); } catch (Exception ex) { Console.WriteLine("Res err: " + ex.Message); }
         try { allConjuntos = await Http.GetFromJsonAsync<List<Conjunto>>("api/conjuntos") ?? new(); } catch (Exception ex) { Console.WriteLine("Conjuntos err: " + ex.Message); }
-        try { allUsuarios = await Http.GetFromJsonAsync<List<Usuario>>("api/usuarios") ?? new(); } catch (Exception ex) { Console.WriteLine("Usuarios err: " + ex.Message); }
 
         if (torreRows.Count == 0) torreRows.Add(new Torre());
         if (apartamentoRows.Count == 0) apartamentoRows.Add(new Apartamento());
-        if (residenteRows.Count == 0) residenteRows.Add(new ResidenteUnidad());
     }
 
     private void SetTab(string tab) => activeTab = tab;
@@ -237,30 +192,6 @@
                 var errorMsg = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error al guardar Apartamento: {errorMsg}");
                 await JS.InvokeVoidAsync("alert", $"Error al guardar Apartamento. HTTP {response.StatusCode}:\n{errorMsg}");
-            }
-        }
-        catch(Exception e)
-        {
-            await JS.InvokeVoidAsync("alert", $"Exception Client: {e.Message}");
-        }
-    }
-
-    private async Task SaveResidente(ResidenteUnidad residente)
-    {
-        try
-        {
-            var response = await Http.PostAsJsonAsync("api/residentesunidades", residente);
-            if (response.IsSuccessStatusCode)
-            {
-                var saved = await response.Content.ReadFromJsonAsync<ResidenteUnidad>();
-                if (saved != null) residente.ResidenteUnidadId = saved.ResidenteUnidadId;
-                await JS.InvokeVoidAsync("alert", "Residente guardado correctamente!");
-            }
-            else
-            {
-                var errorMsg = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error al guardar Residente: {errorMsg}");
-                await JS.InvokeVoidAsync("alert", $"Error al guardar Residente. HTTP {response.StatusCode}:\n{errorMsg}");
             }
         }
         catch(Exception e)
