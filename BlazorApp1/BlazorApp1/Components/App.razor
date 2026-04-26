@@ -21,6 +21,16 @@
 <body>
     <Routes />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script>
+        window.autoResizeTextareas = () => {
+            setTimeout(() => {
+                document.querySelectorAll('textarea').forEach(t => {
+                    t.style.height = 'auto';
+                    t.style.height = (t.scrollHeight) + 'px';
+                });
+            }, 100);
+        };
+    </script>
 </body>
 
 </html>

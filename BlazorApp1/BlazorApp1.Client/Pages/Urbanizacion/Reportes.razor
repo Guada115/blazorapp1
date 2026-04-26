@@ -1,0 +1,398 @@
+@page "/urbanizacion/reportes"
+@rendermode InteractiveWebAssembly
+@attribute [Authorize(Roles = "3")]
+@inject IJSRuntime JS
+@inject HttpClient Http
+@using BlazorApp1.Client.Models
+
+<PageTitle>Reportes - Apex Housing</PageTitle>
+
+<div class="container-fluid py-4 animate-up">
+    <div class="d-flex justify-content-between align-items-end mb-4 page-header">
+        <div>
+            <h1 class="fw-bold mb-1">Reportes</h1>
+            <p class="text-muted mb-0">Genera reportes en Excel o PDF de cualquier tabla del sistema.</p>
+        </div>
+    </div>
+
+    <!-- Selector de entidad -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header border-bottom py-3" style="background-color: var(--card-bg) !important;">
+            <h5 class="fw-bold mb-0 text-white"><i class="bi bi-table me-2"></i>Seleccionar tabla</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                @foreach (var ent in entidades)
+                {
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="reporte-card @(entidadSeleccionada == ent.Key ? "selected" : "")"
+                             @onclick="() => Seleccionar(ent.Key)">
+                            <i class="bi @ent.Value.Icono fs-4 mb-2"></i>
+                            <span class="fw-semibold small">@ent.Value.Nombre</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros y acciones -->
+    @if (!string.IsNullOrEmpty(entidadSeleccionada))
+    {
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header border-bottom py-3" style="background-color: var(--card-bg) !important;">
+                <h5 class="fw-bold mb-0 text-white">
+                    <i class="bi bi-funnel me-2"></i>Filtros — @entidades[entidadSeleccionada].Nombre
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap gap-4 align-items-end">
+
+                    @if (entidades[entidadSeleccionada].TieneFecha)
+                    {
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Fecha inicio</label>
+                            <input type="date" class="form-control" @bind="fechaInicio" />
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Fecha fin</label>
+                            <input type="date" class="form-control" @bind="fechaFin" />
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "usuarios")
+                    {
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Rol</label>
+                            <select class="form-select" @bind="filtroRolId">
+                                <option value="0">Todos los roles</option>
+                                @foreach (var r in roles)
+                                {
+                                    <option value="@r.RolId">@r.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "apartamentos")
+                    {
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Conjunto</label>
+                            <select class="form-select" @bind="filtroConjuntoId" @bind:after="OnConjuntoCambiado">
+                                <option value="0">Todos</option>
+                                @foreach (var c in conjuntos)
+                                {
+                                    <option value="@c.ConjuntoId">@c.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Torre</label>
+                            <select class="form-select" @bind="filtroTorreId">
+                                <option value="0">Todas</option>
+                                @foreach (var t in torresFiltradas)
+                                {
+                                    <option value="@t.TorreId">@t.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "mantenimientos")
+                    {
+                        <div style="width: 220px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Tipo de Mantenimiento</label>
+                            <select class="form-select" @bind="filtroTipoMantenimientoId">
+                                <option value="0">Todos</option>
+                                @foreach (var t in tiposMantenimiento)
+                                {
+                                    <option value="@t.TipoMantenimientoId">@t.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "reservas")
+                    {
+                        <div style="width: 220px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Zona Común</label>
+                            <select class="form-select" @bind="filtroZonaComunId">
+                                <option value="0">Todas</option>
+                                @foreach (var z in zonasComunes)
+                                {
+                                    <option value="@z.ZonaComunId">@z.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "ingresos")
+                    {
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Tipo de Ingreso</label>
+                            <select class="form-select" @bind="filtroTipoIngreso">
+                                <option value="">Todos</option>
+                                <option value="visita">Visita</option>
+                                <option value="domicilio">Domicilio</option>
+                                <option value="proveedor">Proveedor</option>
+                                <option value="transporte">Transporte</option>
+                                <option value="correo">Correo</option>
+                                <option value="reunión">Reunión</option>
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "parqueaderos")
+                    {
+                        <div style="width: 160px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Tipo</label>
+                            <select class="form-select" @bind="filtroTipoPar">
+                                <option value="">Todos</option>
+                                <option value="carro">Carro</option>
+                                <option value="moto">Moto</option>
+                                <option value="movilidad reducida">Movilidad Reducida</option>
+                            </select>
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Apartamento</label>
+                            <select class="form-select" @bind="filtroApartamentoIdPar">
+                                <option value="0">Todos</option>
+                                @foreach (var a in apartamentos)
+                                {
+                                    <option value="@a.ApartamentoId">@a.Numero</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "visitantes")
+                    {
+                        <div style="width: 160px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Tipo</label>
+                            <select class="form-select" @bind="filtroTipoVis">
+                                <option value="">Todos</option>
+                                <option value="carro">Carro</option>
+                                <option value="moto">Moto</option>
+                                <option value="movilidad reducida">Movilidad Reducida</option>
+                            </select>
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Conjunto</label>
+                            <select class="form-select" @bind="filtroConjuntoVis">
+                                <option value="0">Todos</option>
+                                @foreach (var c in conjuntos)
+                                {
+                                    <option value="@c.ConjuntoId">@c.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div style="width: 160px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Estado</label>
+                            <select class="form-select" @bind="filtroOcupadoVis">
+                                <option value="">Todos</option>
+                                <option value="si">Ocupado</option>
+                                <option value="no">Disponible</option>
+                            </select>
+                        </div>
+                    }
+
+                    @if (entidadSeleccionada == "cuartosutil")
+                    {
+                        <div style="width: 180px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Estado</label>
+                            <select class="form-select" @bind="filtroEstadoCU">
+                                <option value="">Todos</option>
+                                <option value="disponible">Disponible</option>
+                                <option value="asignado">Asignado</option>
+                                <option value="en mantenimiento">En mantenimiento</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label fw-semibold small text-muted mb-1">Conjunto</label>
+                            <select class="form-select" @bind="filtroConjuntoCU">
+                                <option value="0">Todos</option>
+                                @foreach (var c in conjuntos)
+                                {
+                                    <option value="@c.ConjuntoId">@c.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    @if (!entidades[entidadSeleccionada].TieneFecha && entidadSeleccionada != "usuarios" && entidadSeleccionada != "apartamentos" && entidadSeleccionada != "mantenimientos" && entidadSeleccionada != "reservas" && entidadSeleccionada != "ingresos" && entidadSeleccionada != "parqueaderos" && entidadSeleccionada != "visitantes" && entidadSeleccionada != "cuartosutil")
+                    {
+                        <p class="text-muted mb-0 fst-italic">Esta tabla no tiene filtros disponibles.</p>
+                    }
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button class="btn btn-success px-4 fw-semibold" @onclick="GenerarExcel">
+                        <i class="bi bi-file-earmark-excel me-2"></i>Generar Excel
+                    </button>
+                    <button class="btn btn-danger px-4 fw-semibold" @onclick="GenerarPdf">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Generar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .reporte-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem 1rem;
+        border: 2px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        background-color: var(--card-bg);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        color: var(--text-muted);
+        min-height: 100px;
+    }
+
+    .reporte-card:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(79,70,229,0.2);
+    }
+
+    .reporte-card.selected {
+        border-color: var(--primary);
+        background-color: rgba(79,70,229,0.12);
+        color: var(--primary);
+        box-shadow: 0 4px 16px rgba(79,70,229,0.25);
+    }
+</style>
+
+@code {
+    private string entidadSeleccionada = "";
+    private DateTime? fechaInicio;
+    private DateTime? fechaFin;
+    private int filtroRolId = 0;
+    private int filtroConjuntoId = 0;
+    private int filtroTorreId = 0;
+    private int filtroTipoMantenimientoId = 0;
+    private int filtroZonaComunId = 0;
+    private string filtroTipoIngreso = "";
+    private string filtroTipoPar = "";
+    private long filtroApartamentoIdPar = 0;
+    private string filtroTipoVis = "";
+    private int filtroConjuntoVis = 0;
+    private string filtroOcupadoVis = "";
+    private string filtroEstadoCU = "";
+    private int filtroConjuntoCU = 0;
+
+    private List<Rol> roles = new();
+    private List<Conjunto> conjuntos = new();
+    private List<Torre> todasLasTorres = new();
+    private List<Torre> torresFiltradas = new();
+    private List<TipoMantenimiento> tiposMantenimiento = new();
+    private List<ZonaComun> zonasComunes = new();
+    private List<Apartamento> apartamentos = new();
+
+    private record EntidadInfo(string Nombre, string Icono, bool TieneFecha);
+
+    private Dictionary<string, EntidadInfo> entidades = new()
+    {
+        { "usuarios",           new("Usuarios",               "bi-people",           false) },
+        { "conjuntos",          new("Conjuntos",              "bi-buildings",         false) },
+        { "torres",             new("Torres",                 "bi-building-up",       false) },
+        { "apartamentos",       new("Apartamentos",           "bi-house-door",        false) },
+        { "roles",              new("Roles",                  "bi-person-badge",      false) },
+        { "zonascomunes",       new("Zonas Comunes",          "bi-tree",              false) },
+        { "tiposmantenimiento", new("Tipos Mantenimiento",    "bi-gear",              false) },
+        { "mantenimientos",     new("Mantenimientos",         "bi-tools",             true)  },
+        { "reservas",           new("Reservas",               "bi-calendar-check",    true)  },
+        { "ingresos",           new("Ingresos",               "bi-door-open",         true)  },
+        { "bitacora",           new("Bitácora",               "bi-journal-text",      true)  },
+        { "parqueaderos",       new("Parqueaderos",           "bi-p-square",          false) },
+        { "visitantes",         new("Visitantes Parqueadero", "bi-p-square-fill",     false) },
+        { "cuartosutil",        new("Cuartos Útiles",         "bi-door-closed",       false) },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            roles = await Http.GetFromJsonAsync<List<Rol>>("api/roles") ?? new();
+            conjuntos = await Http.GetFromJsonAsync<List<Conjunto>>("api/conjuntos") ?? new();
+            todasLasTorres = await Http.GetFromJsonAsync<List<Torre>>("api/torres") ?? new();
+            tiposMantenimiento = await Http.GetFromJsonAsync<List<TipoMantenimiento>>("api/tiposmantenimiento") ?? new();
+            zonasComunes = await Http.GetFromJsonAsync<List<ZonaComun>>("api/zonascomunes") ?? new();
+            apartamentos = await Http.GetFromJsonAsync<List<Apartamento>>("api/apartamentos") ?? new();
+        }
+        catch { }
+    }
+
+    private void Seleccionar(string key)
+    {
+        entidadSeleccionada = key;
+        fechaInicio = null;
+        fechaFin = null;
+        filtroRolId = 0;
+        filtroConjuntoId = 0;
+        filtroTorreId = 0;
+        filtroTipoMantenimientoId = 0;
+        filtroZonaComunId = 0;
+        filtroTipoIngreso = "";
+        filtroTipoPar = "";
+        filtroApartamentoIdPar = 0;
+        filtroTipoVis = "";
+        filtroConjuntoVis = 0;
+        filtroOcupadoVis = "";
+        filtroEstadoCU = "";
+        filtroConjuntoCU = 0;
+        torresFiltradas = new();
+    }
+
+    private void OnConjuntoCambiado()
+    {
+        filtroTorreId = 0;
+        torresFiltradas = filtroConjuntoId == 0
+            ? new()
+            : todasLasTorres.Where(t => t.ConjuntoId == filtroConjuntoId).ToList();
+    }
+
+    private async Task GenerarExcel()
+    {
+        await JS.InvokeVoidAsync("window.open", ConstruirUrl("excel"), "_blank");
+    }
+
+    private async Task GenerarPdf()
+    {
+        await JS.InvokeVoidAsync("window.open", ConstruirUrl("pdf"), "_blank");
+    }
+
+    private string ConstruirUrl(string formato)
+    {
+        var baseUrl = formato == "pdf"
+            ? $"/api/export/pdf/{entidadSeleccionada}"
+            : $"/api/export/{entidadSeleccionada}";
+
+        var parametros = new List<string>();
+        if (fechaInicio.HasValue) parametros.Add($"inicio={fechaInicio.Value:yyyy-MM-dd}");
+        if (fechaFin.HasValue) parametros.Add($"fin={fechaFin.Value:yyyy-MM-dd}");
+        if (entidadSeleccionada == "usuarios" && filtroRolId != 0) parametros.Add($"rolId={filtroRolId}");
+        if (entidadSeleccionada == "apartamentos" && filtroConjuntoId != 0) parametros.Add($"conjuntoId={filtroConjuntoId}");
+        if (entidadSeleccionada == "apartamentos" && filtroTorreId != 0) parametros.Add($"torreId={filtroTorreId}");
+        if (entidadSeleccionada == "mantenimientos" && filtroTipoMantenimientoId != 0) parametros.Add($"tipoMantenimientoId={filtroTipoMantenimientoId}");
+        if (entidadSeleccionada == "reservas" && filtroZonaComunId != 0) parametros.Add($"zonaComunId={filtroZonaComunId}");
+        if (entidadSeleccionada == "ingresos" && !string.IsNullOrEmpty(filtroTipoIngreso)) parametros.Add($"tipoIngreso={Uri.EscapeDataString(filtroTipoIngreso)}");
+        if (entidadSeleccionada == "parqueaderos" && !string.IsNullOrEmpty(filtroTipoPar)) parametros.Add($"tipoPar={Uri.EscapeDataString(filtroTipoPar)}");
+        if (entidadSeleccionada == "parqueaderos" && filtroApartamentoIdPar != 0) parametros.Add($"apartamentoIdPar={filtroApartamentoIdPar}");
+        if (entidadSeleccionada == "visitantes" && !string.IsNullOrEmpty(filtroTipoVis)) parametros.Add($"tipoVis={Uri.EscapeDataString(filtroTipoVis)}");
+        if (entidadSeleccionada == "visitantes" && filtroConjuntoVis != 0) parametros.Add($"conjuntoVis={filtroConjuntoVis}");
+        if (entidadSeleccionada == "visitantes" && !string.IsNullOrEmpty(filtroOcupadoVis)) parametros.Add($"ocupadoVis={filtroOcupadoVis}");
+        if (entidadSeleccionada == "cuartosutil" && !string.IsNullOrEmpty(filtroEstadoCU)) parametros.Add($"estadoCU={Uri.EscapeDataString(filtroEstadoCU)}");
+        if (entidadSeleccionada == "cuartosutil" && filtroConjuntoCU != 0) parametros.Add($"conjuntoCU={filtroConjuntoCU}");
+
+        return parametros.Count > 0 ? $"{baseUrl}?{string.Join("&", parametros)}" : baseUrl;
+    }
+}

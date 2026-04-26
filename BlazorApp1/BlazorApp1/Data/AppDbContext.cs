@@ -23,6 +23,7 @@ namespace BlazorApp1.Data
         public DbSet<Parqueadero> Parqueaderos { get; set; }
         public DbSet<ParqueaderoVisitante> ParqueaderosVisitantes { get; set; }
         public DbSet<Reserva> Reservas { get; set; }
+        public DbSet<CuartoUtil> CuartosUtil { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,7 @@ namespace BlazorApp1.Data
 
             // EF Core 7+ trigger configuration
             modelBuilder.Entity<Reserva>().ToTable(tb => tb.HasTrigger("trg_reserva_calcular_total"));
+            modelBuilder.Entity<CuartoUtil>().ToTable(tb => tb.HasTrigger("trg_cuartoutil"));
         }
     }
 }

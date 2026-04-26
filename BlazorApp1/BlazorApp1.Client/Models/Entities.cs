@@ -183,6 +183,9 @@ namespace BlazorApp1.Client.Models
 
         [Column("observaciones")]
         public string? Observaciones { get; set; }
+
+        [NotMapped]
+        public int? ConjuntoId { get; set; }
     }
 
     [Table("zonacomun", Schema = "dbo")]
@@ -239,7 +242,7 @@ namespace BlazorApp1.Client.Models
         public int ZonaComunId { get; set; }
     }
 
-    [Table("parqueadero", Schema = "dbo")]
+        [Table("parqueadero", Schema = "dbo")]
     public class Parqueadero
     {
         [Key]
@@ -257,9 +260,15 @@ namespace BlazorApp1.Client.Models
 
         [Column("apartamentoid")]
         public long? ApartamentoId { get; set; }
+
+        [NotMapped]
+        public string TorreNombre { get; set; } = string.Empty;
+
+        [NotMapped]
+        public string ConjuntoNombre { get; set; } = string.Empty;
     }
 
-    [Table("parqueaderovisitante", Schema = "dbo")]
+[Table("parqueaderovisitante", Schema = "dbo")]
     public class ParqueaderoVisitante
     {
         [Key]
@@ -291,6 +300,29 @@ namespace BlazorApp1.Client.Models
         public DateTime? FechaHoraSalida { get; set; }
     }
 
+    [Table("cuartoutil", Schema = "dbo")]
+    public class CuartoUtil
+    {
+        [Key]
+        [Column("cuartoutilid")]
+        public int CuartoUtilId { get; set; }
+
+        [Column("cuartoutilnumero")]
+        public string CuartoUtilNumero { get; set; } = string.Empty;
+
+        [Column("estado")]
+        public string Estado { get; set; } = string.Empty;
+
+        [Column("apartamentoid")]
+        public long? ApartamentoId { get; set; }
+
+        [Column("torreid")]
+        public long? TorreId { get; set; }
+
+        [Column("conjuntoid")]
+        public long? ConjuntoId { get; set; }
+    }
+
     [Table("reserva", Schema = "dbo")]
     public class Reserva
     {
@@ -318,5 +350,15 @@ namespace BlazorApp1.Client.Models
 
         [Column("totalcobrar")]
         public decimal? TotalCobrar { get; set; }
+
+        [NotMapped]
+        public string ZonaNombre { get; set; } = string.Empty;
+
+        [NotMapped]
+        public string UsuarioNombre { get; set; } = string.Empty;
     }
 }
+
+
+
+
